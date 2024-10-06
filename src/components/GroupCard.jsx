@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 
 // eslint-disable-next-line max-len
-export default function GroupCard({ name, subtext, profilePic, bodyText, actions }) {
+export default function GroupCard({ id, name, subtext, profilePic, bodyText, requested, onJoin }) {
   return (
     <Card sx={{ width: '100%', borderRadius: 4 }}>
       <CardHeader
@@ -35,20 +35,15 @@ export default function GroupCard({ name, subtext, profilePic, bodyText, actions
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'flex-end' }}>
-        {actions.map((action, index) => (
-          <Button
-            key={index}
-            size="small"
-            variant={index === actions.length - 1 ? 'contained' : 'text'}
-            onClick={action.onClick}
-            sx={{
-              bgcolor: index === actions.length - 1 ? 'primary.main' : 'transparent',
-              color: index === actions.length - 1 ? 'white' : 'primary.main',
-            }}
-          >
-            {action.label}
-          </Button>
-        ))}
+        <Button
+          size="small"
+          variant={requested ? 'outlined' : 'contained'}
+          color={requested ? 'default' : 'primary'}
+          onClick={onJoin}
+          disabled={requested}
+        >
+          {requested ? 'Requested' : 'Join'}
+        </Button>
       </CardActions>
     </Card>
   );

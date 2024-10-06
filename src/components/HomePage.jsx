@@ -4,11 +4,11 @@ import { Box } from '@mui/material';
 
 import GroupsList from './GroupsList';
 
-export default function HomePage({ user }) {
+export default function HomePage() {
   return (
     <Box>
       <h1 style={{ textAlign: 'center' }}>Groups</h1>
-      <GroupsList user={user} />
+      <GroupsList />
     </Box>
   );
 }
