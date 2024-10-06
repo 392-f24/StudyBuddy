@@ -25,6 +25,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.2",
     "@mui/material": "^6.1.2",
+    "date-fns": "^4.1.0",
     "firebase": "^10.14.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",

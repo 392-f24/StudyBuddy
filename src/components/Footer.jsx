@@ -23,9 +23,9 @@ export default function Footer({ currentPage, setCurrentPage }) {
             case 1:
               navigate('/groups');
               break;
-            case 2:
-              navigate('/messages');
-              break;
+            // case 2:
+            //   navigate('/messages');
+            //   break;
             default:
               break;
           }
@@ -33,7 +33,7 @@ export default function Footer({ currentPage, setCurrentPage }) {
       >
         <BottomNavigationAction label="Home" icon={<HomeIcon />} />
         <BottomNavigationAction label="Groups" icon={<GroupsIcon />} />
-        <BottomNavigationAction label="Messages" icon={<MessageIcon />} />
+        {/* <BottomNavigationAction label="Messages" icon={<MessageIcon/>}/> */}
       </BottomNavigation>
     </Box>
   );

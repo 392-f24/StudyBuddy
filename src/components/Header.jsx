@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Toolbar, Typography, IconButton, Avatar, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,13 +18,8 @@ export default function Header() {
   return (
     <AppBar position="static" sx={{ backgroundColor: '#f5f5f5', color: '#000' }}>
       <Toolbar>
-        {/* Menu Icon (Left) */}
-        <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-          <MenuIcon />
-        </IconButton>
-
         {/* App Name */}
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Typography variant="h5" sx={{ flexGrow: 1 }}>
           StudyBuddy
         </Typography>
 
@@ -35,7 +29,7 @@ export default function Header() {
             <IconButton
               edge="end"
               color="inherit"
-              onClick={handleProfileClick} // Navigate to profile page on click
+              onClick={handleSignOut} // Navigate to profile page on click
             >
               <Avatar alt={user.displayName} src={user.photoURL} />
             </IconButton>
