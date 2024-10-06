@@ -3,10 +3,13 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
   collection,
-  addDoc,
   updateDoc,
-  runTransaction,
+  writeBatch,
+  arrayUnion,
+  query,
+  where,
 } from 'firebase/firestore';
 
 import { db } from './firebase'; // import db from the firebase.js
@@ -50,7 +53,6 @@ export const getUserProfile = async (uid) => {
     const userSnapshot = await getDoc(userDocRef);
 
     if (userSnapshot.exists()) {
-      console.log(userSnapshot.data());
       return userSnapshot.data(); // return user data
     } else {
       console.log('No such user profile found');
@@ -71,113 +73,6 @@ export const updateUserProfile = async (uid, updates) => {
   }
 };
 
-// ************************************************************
-// Example usage: (Type 1)
-// await updateUserProfile(user.uid, {
-//   name: "New Name",
-//   email: "newemail@example.com",
-//   major: "Computer Science"
-// });
-
-// ************************************************************
-// Example usage: (Type 2)
-// const updates = {};
-
-// if (newName) updates.name = newName;
-// if (newEmail) updates.email = newEmail;
-// if (newMajor) updates.major = newMajor;
-
-// await updateUserProfile(user.uid, updates);
-// ************************************************************
-
-// Create a new match
-export const createMatch = async (users, time, location, description) => {
-  if (!Array.isArray(users) || users.length < 2) {
-    throw new Error('Invalid user list');
-  }
-  if (!time || !location || !description) {
-    throw new Error('Missing required match details');
-  }
-
-  // Initialize each user's status as 'pending'
-  const usersWithStatus = users.map((userId) => ({
-    uid: userId,
-    status: 'pending', // initial status; can be 'accepted' or 'declined'
-    joinedAt: new Date().toISOString(), // optional: track when user joined
-  }));
-
-  try {
-    const matchRef = await addDoc(collection(db, 'matches'), {
-      users: usersWithStatus,
-      time,
-      location,
-      description,
-      awaitingConfirmation: true, // awaiting confirmation by default
-      createdAt: new Date().toISOString(), // track match creation time
-    });
-    console.log('Match created with ID: ', matchRef.id);
-    return matchRef.id;
-  } catch (error) {
-    console.error('Error creating match:', error);
-  }
-};
-
-// Get match by match id
-export const getMatch = async (matchId) => {
-  try {
-    const matchDocRef = doc(db, 'matches', matchId);
-    const matchSnapshot = await getDoc(matchDocRef);
-
-    if (matchSnapshot.exists()) {
-      return matchSnapshot.data(); // return match data
-    } else {
-      console.log('No such match found');
-    }
-  } catch (error) {
-    console.error('Error fetching match:', error);
-  }
-};
-
-// Update match with user confirmation
-export const updateMatchWithUser = async (userId, matchId, newStatus) => {
-  try {
-    await runTransaction(db, async (transaction) => {
-      const matchDocRef = doc(db, 'matches', matchId);
-      const userDocRef = doc(db, 'users', userId);
-
-      const matchDoc = await transaction.get(matchDocRef);
-      if (!matchDoc.exists()) {
-        throw 'Match does not exist!';
-      }
-
-      const matchData = matchDoc.data();
-      const updatedUsers = matchData.users.map((user) => {
-        if (user.uid === userId) {
-          return { ...user, status: newStatus };
-        }
-        return user;
-      });
-
-      // Check if all users have confirmed the match
-      const awaitingConfirmation = updatedUsers.some((user) => user.status === 'pending');
-
-      // Update the match with the new user status and awaitingConfirmation flag
-      transaction.update(matchDocRef, {
-        users: updatedUsers,
-        awaitingConfirmation,
-      });
-
-      // Optionally, update the user's currentMatch if they've confirmed
-      if (newStatus === 'confirmed') {
-        transaction.update(userDocRef, { currentMatch: matchId });
-      }
-    });
-    console.log('Transaction successfully committed!');
-  } catch (error) {
-    console.log('Transaction failed: ', error);
-  }
-};
-
 // Creates a new group in the database
 // ownerUID: User that requested to create the group
 // meetingTime: Specified meeting time for study group
@@ -194,7 +89,7 @@ export const createGroup = async (ownerUID, meetingTime, meetingLocation, descri
       description: description,
     };
 
-    const docRef = await firestore.collection('groups').add(group);
+    const docRef = await collection('groups').add(group);
 
     return docRef.id;
   } catch (error) {
@@ -208,7 +103,7 @@ export const createGroup = async (ownerUID, meetingTime, meetingLocation, descri
 // userUID: The UID of the user requesting to join the group
 export const requestToJoinGroup = async (groupId, userUID) => {
   try {
-    const groupRef = firestore.collection('groups').doc(groupId);
+    const groupRef = collection('groups').doc(groupId);
     const groupDoc = await groupRef.get();
 
     if (!groupDoc.exists) {
@@ -216,25 +111,25 @@ export const requestToJoinGroup = async (groupId, userUID) => {
     }
 
     const ownerUID = groupDoc.data().owner;
-    const ownerRef = firestore.collection('users').doc(ownerUID);
+    const ownerRef = collection('users').doc(ownerUID);
     if (!ownerRef.exists) {
       throw new Error('Owner of group does not exist');
     }
-    const userRef = firestore.collection('users').doc(userUID);
+    const userRef = collection('users').doc(userUID);
     if (!ownerRef.exists) {
       throw new Error('User does not exist');
     }
 
-    const batch = firestore.batch();
+    const batch = writeBatch(db);
 
     // Update the user's 'outgoingRequests' array to include the groupId
     batch.update(userRef, {
-      outgoingRequests: firestore.FieldValue.arrayUnion(groupId),
+      outgoingRequests: arrayUnion(groupId),
     });
 
     // Update the owner's 'incomingRequests' array to include the user's UID and the groupId
     batch.update(ownerRef, {
-      incomingRequests: firestore.FieldValue.arrayUnion({ groupId, userUID }),
+      incomingRequests: arrayUnion({ groupId, userUID }),
     });
 
     await batch.commit();
@@ -250,27 +145,27 @@ export const requestToJoinGroup = async (groupId, userUID) => {
 // groupId: The ID of the group to add the user to
 // userUID: The UID of the user to be added to the group
 export const addUserToGroup = async (groupId, userUID) => {
-  const groupRef = firestore.collection('groups').doc(groupId);
+  const groupRef = collection('groups').doc(groupId);
   if (!groupDoc.exists) {
     throw new Error('Group does not exist');
   }
 
-  const userRef = firestore.collection('users').doc(userUID);
+  const userRef = collection('users').doc(userUID);
   if (!userUID.exists) {
     throw new Error('User does not exist');
   }
 
   try {
-    const batch = firestore.batch();
+    const batch = writeBatch(db);
 
     // Update the group's 'members' array field to include the new user
     batch.update(groupRef, {
-      members: firestore.FieldValue.arrayUnion(userUID),
+      members: arrayUnion(userUID),
     });
 
     // Update the user's 'groups' array field to include the group ID
     batch.update(userRef, {
-      groups: firestore.FieldValue.arrayUnion(groupId),
+      groups: arrayUnion(groupId),
     });
 
     await batch.commit();
@@ -278,7 +173,7 @@ export const addUserToGroup = async (groupId, userUID) => {
     return true;
   } catch (error) {
     console.error('Error adding user to group:', error);
-    throw error; // Rethrow the error to handle it in the caller function
+    throw error;
   }
 };
 
@@ -286,7 +181,7 @@ export const addUserToGroup = async (groupId, userUID) => {
 // userUID: The UID of the user whose incoming requests you want to retrieve
 export const getIncomingRequests = async (userUID) => {
   try {
-    const userRef = firestore.collection('users').doc(userUID);
+    const userRef = collection('users').doc(userUID);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
@@ -307,7 +202,7 @@ export const getIncomingRequests = async (userUID) => {
 // userUID: The UID of the user whose outgoing requests you want to retrieve
 export const getOutgoingRequests = async (userUID) => {
   try {
-    const userRef = firestore.collection('users').doc(userUID);
+    const userRef = collection('users').doc(userUID);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
@@ -328,7 +223,7 @@ export const getOutgoingRequests = async (userUID) => {
 // userUID: The UID of the user whose current groups you want to retrieve
 export const getUserCurrentGroups = async (userUID) => {
   try {
-    const userRef = firestore.collection('users').doc(userUID);
+    const userRef = collection('users').doc(userUID);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
@@ -338,9 +233,7 @@ export const getUserCurrentGroups = async (userUID) => {
     const groupIds = userDoc.data().groups || [];
 
     // Fetch details of each group using the group IDs
-    const groupPromises = groupIds.map((groupId) =>
-      firestore.collection('groups').doc(groupId).get(),
-    );
+    const groupPromises = groupIds.map((groupId) => collection('groups').doc(groupId).get());
     const groupDocs = await Promise.all(groupPromises);
 
     // Extract group data
@@ -359,7 +252,7 @@ export const getUserCurrentGroups = async (userUID) => {
 // userUID: The UID of the user whose past groups you want to retrieve
 export const getUserPastGroups = async (userUID) => {
   try {
-    const userRef = firestore.collection('users').doc(userUID);
+    const userRef = collection('users').doc(userUID);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
@@ -370,9 +263,7 @@ export const getUserPastGroups = async (userUID) => {
     const pastGroupIds = userDoc.data().pastGroups || [];
 
     // Fetch details of each past group using the group IDs
-    const groupPromises = pastGroupIds.map((groupId) =>
-      firestore.collection('groups').doc(groupId).get(),
-    );
+    const groupPromises = pastGroupIds.map((groupId) => collection('groups').doc(groupId).get());
     const groupDocs = await Promise.all(groupPromises);
 
     // Extract group data
@@ -390,14 +281,14 @@ export const getUserPastGroups = async (userUID) => {
 // Returns all "open" groups in the database
 export const getOpenGroups = async () => {
   try {
-    // Query the "groups" collection where the 'open' field is true
-    const openGroupsQuerySnapshot = await firestore
-      .collection('groups')
-      .where('open', '==', true)
-      .get();
+    // Create a query against the "groups" collection where the 'open' field is true
+    const q = query(collection(db, 'groups'), where('open', '==', true));
+
+    // Execute the query
+    const querySnapshot = await getDocs(q);
 
     // Extract group data
-    const openGroups = openGroupsQuerySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const openGroups = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     return openGroups;
   } catch (error) {
@@ -410,7 +301,7 @@ export const getOpenGroups = async () => {
 // groupId: The ID of the group to close
 export const closeGroup = async (groupId) => {
   try {
-    const groupRef = firestore.collection('groups').doc(groupId);
+    const groupRef = collection('groups').doc(groupId);
 
     // Update the 'open' field to false
     await groupRef.update({
