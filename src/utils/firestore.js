@@ -78,6 +78,7 @@ export const updateUserProfile = async (uid, updates) => {
 // meetingTime: Specified meeting time for study group
 // meetingLocation: Specified meeting location for study group
 // description (optional): Description of the study group
+// TODO: Add new group to user's "groups" field
 export const createGroup = async (ownerUID, meetingTime, meetingLocation, description = '') => {
   try {
     const group = {
@@ -184,8 +185,8 @@ export const addUserToGroup = async (groupId, userUID) => {
 // userUID: The UID of the user whose incoming requests you want to retrieve
 export const getIncomingRequests = async (userUID) => {
   try {
-    const userRef = collection('users').doc(userUID);
-    const userDoc = await userRef.get();
+    const userRef = doc(db, 'users', userUID);
+    const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists) {
       throw new Error('User does not exist');
@@ -226,7 +227,7 @@ export const getOutgoingRequests = async (userUID) => {
 // userUID: The UID of the user whose current groups you want to retrieve
 export const getUserCurrentGroups = async (userUID) => {
   try {
-    const userRef = collection('users').doc(userUID);
+    const userRef = doc(db, 'users', userUID);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists) {
@@ -236,7 +237,7 @@ export const getUserCurrentGroups = async (userUID) => {
     const groupIds = userDoc.data().groups || [];
 
     // Fetch details of each group using the group IDs
-    const groupPromises = groupIds.map((groupId) => collection(db, 'groups').doc(groupId));
+    const groupPromises = groupIds.map((groupId) => doc(db, 'groups', groupId));
     const groupDocs = await Promise.all(groupPromises);
 
     // Extract group data

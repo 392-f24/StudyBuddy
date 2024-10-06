@@ -10,26 +10,45 @@ import {
   getUserProfile,
   getOutgoingRequests,
   requestToJoinGroup,
-} from '../utils/firestore'; // Import necessary functions
+  getIncomingRequests,
+} from '../utils/firestore';
 
-export default function GroupsList() {
-  const [user, error] = useAuthState();
+export default function GroupsList({
+  filter,
+  emtpyMessage = 'No groups available',
+  joinable = true,
+}) {
+  if (filter == undefined) {
+    filter = () => true;
+  }
+
+  const [user] = useAuthState();
 
   const [openGroups, setOpenGroups] = useState([]);
   const [outgoingRequests, setOutgoingRequests] = useState([]);
 
   useEffect(() => {
+    setOpenGroups([]);
+    setOutgoingRequests([]);
+
+    if (!user) {
+      return;
+    }
+
     const fetchOpenGroups = async () => {
       try {
         setOpenGroups([]);
         setOutgoingRequests([]);
 
+        const outgoing = await getOutgoingRequests(user.uid);
+        setOutgoingRequests(outgoing || []);
+
+        const incoming = await getIncomingRequests(user.uid);
+
         const groups = await getOpenGroups();
-        const filteredGroups = user
-          ? groups.filter((group) => {
-              group.owner !== user.uid;
-            })
-          : groups;
+        let filteredGroups = groups.filter((group) => {
+          return filter(group, user, outgoing, incoming);
+        });
 
         const groupsWithOwnerDetails = await Promise.all(
           filteredGroups.map(async (group) => {
@@ -43,12 +62,6 @@ export default function GroupsList() {
         );
 
         setOpenGroups(groupsWithOwnerDetails);
-
-        // Fetch outgoing requests if the user is logged in
-        if (user) {
-          const requests = await getOutgoingRequests(user.uid);
-          setOutgoingRequests(requests || []); // Ensure it's an object
-        }
       } catch (error) {
         console.error('Error fetching open groups:', error);
       }
@@ -62,7 +75,7 @@ export default function GroupsList() {
       if (user) {
         await requestToJoinGroup(groupId, user.uid);
         // Update the local state to reflect the request
-        setOutgoingRequests((prev) => ({ ...prev, [groupId]: true }));
+        setOutgoingRequests((prev) => [...prev, groupId]);
       }
     } catch (error) {
       console.error('Error requesting to join group:', error);
@@ -88,12 +101,13 @@ export default function GroupsList() {
                 bodyText={group.description || 'No description available'}
                 requested={isRequested}
                 onJoin={() => handleJoinGroup(group.id)}
+                joinable={joinable}
               />
             );
           })
         ) : (
           <Typography variant="h6" color="text.secondary">
-            No open groups available.
+            {emtpyMessage}
           </Typography>
         )}
       </Stack>

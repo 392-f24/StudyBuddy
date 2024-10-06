@@ -7,6 +7,7 @@ import { Box, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 export default function Footer({ currentPage, setCurrentPage }) {
+  // TODO: Sync with page URL
   const navigate = useNavigate();
 
   return (

@@ -3,10 +3,10 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Footer from './components/Footer';
-import GroupsPage from './components/GroupsPage';
 import Header from './components/Header';
-import HomePage from './components/HomePage';
-import ProfilePage from './components/ProfilePage';
+import GroupsPage from './pages/GroupsPage';
+import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
 
 import './App.css';
 
