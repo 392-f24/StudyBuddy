@@ -22,6 +22,7 @@ export default function GroupsList() {
     const fetchOpenGroups = async () => {
       try {
         setOpenGroups([]);
+        setOutgoingRequests([]);
 
         const groups = await getOpenGroups();
         const filteredGroups = user
@@ -46,7 +47,7 @@ export default function GroupsList() {
         // Fetch outgoing requests if the user is logged in
         if (user) {
           const requests = await getOutgoingRequests(user.uid);
-          setOutgoingRequests(requests || {}); // Ensure it's an object
+          setOutgoingRequests(requests || []); // Ensure it's an object
         }
       } catch (error) {
         console.error('Error fetching open groups:', error);

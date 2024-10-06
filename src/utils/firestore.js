@@ -31,10 +31,10 @@ export const createUserProfile = async (user) => {
         year: '', // optional
         courses: {}, // empty object, to be updated later
         bio: '', // optional
-        groups: {}, // empty object, to be updated later
-        pastGroups: {}, // empty object, to be updated later
-        incomingRequests: {}, // empty object, to be updated later
-        outgoingRequests: {}, // empty object, to be updated later
+        groups: [], // empty object, to be updated later
+        pastGroups: [], // empty object, to be updated later
+        incomingRequests: [], // empty object, to be updated later
+        outgoingRequests: [], // empty object, to be updated later
       });
       console.log('User profile created');
     } else {
