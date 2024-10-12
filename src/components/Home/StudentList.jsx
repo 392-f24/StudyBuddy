@@ -13,6 +13,7 @@ export default function StudentList({
   setRequestedUsers,
   matchedUserUids,
   selectedMajors,
+  selectedCourses,
   selectedYears,
 }) {
   const studentData = useStudentData();
@@ -22,6 +23,8 @@ export default function StudentList({
       profile.uid !== userProfile.uid &&
       !matchedUserUids.has(profile.uid) &&
       (selectedMajors.length === 0 || selectedMajors.includes(profile.major)) &&
+      (selectedCourses.length === 0 ||
+        profile.courses?.some((course) => selectedCourses.includes(course))) &&
       (selectedYears.length === 0 || selectedYears.includes(profile.year)),
   );
 
@@ -30,12 +33,16 @@ export default function StudentList({
     currentPage,
     totalPages,
     handlePageChange,
-  } = usePagination(filteredStudentData, 10);
+  } = usePagination(filteredStudentData || [], 10);
 
   const handleMatch = async (studentUserProfile) => {
     try {
       await createMatch([studentUserProfile.uid, userProfile.uid], 'University Library');
-      setRequestedUsers((prev) => new Set(prev).add(studentUserProfile.uid));
+      setRequestedUsers((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(studentUserProfile.uid);
+        return newSet;
+      });
     } catch (error) {
       console.error('Error creating match:', error);
     }

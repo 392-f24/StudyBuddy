@@ -12,6 +12,7 @@ export default function HomePage() {
   const { userProfile, requestedUsers, setRequestedUsers, matchedUserUids, loading } =
     useUserProfile(user);
   const [selectedMajors, setSelectedMajors] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
   const navigate = useNavigate();
 
@@ -61,6 +62,8 @@ export default function HomePage() {
         <StudentFilter
           selectedMajors={selectedMajors}
           setSelectedMajors={setSelectedMajors}
+          selectedCourses={selectedCourses}
+          setSelectedCourses={setSelectedCourses}
           selectedYears={selectedYears}
           setSelectedYears={setSelectedYears}
         />
@@ -71,6 +74,7 @@ export default function HomePage() {
         setRequestedUsers={setRequestedUsers}
         matchedUserUids={matchedUserUids}
         selectedMajors={selectedMajors}
+        selectedCourses={selectedCourses}
         selectedYears={selectedYears}
       />
     </Box>

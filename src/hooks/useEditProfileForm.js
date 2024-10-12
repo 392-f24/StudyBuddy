@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 
-import { getMajors } from '@firestore/general';
+import { getMajors, getCourses } from '@firestore/general';
 import { getUserProfile, updateUserProfile } from '@firestore/userProfile';
 
 const useEditProfileForm = (user) => {
   const [loading, setLoading] = useState(true);
   const [majorsList, setMajorsList] = useState([]);
   const [selectedMajors, setSelectedMajors] = useState([]);
+  const [coursesList, setCoursesList] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,11 +25,16 @@ const useEditProfileForm = (user) => {
   const [firstTimeUser, setFirstTimeUser] = useState(false);
 
   useEffect(() => {
-    const fetchProfileAndMajors = async () => {
+    const fetchProfileMajorsAndCourses = async () => {
       if (user && user.uid) {
         try {
-          const [data, majorsFromDb] = await Promise.all([getUserProfile(user.uid), getMajors()]);
+          const [data, majorsFromDb, coursesFromDb] = await Promise.all([
+            getUserProfile(user.uid),
+            getMajors(),
+            getCourses(),
+          ]);
           setMajorsList(majorsFromDb);
+          setCoursesList(coursesFromDb); // Set available courses
 
           if (data) {
             setFormData({
@@ -36,24 +44,24 @@ const useEditProfileForm = (user) => {
               major: data.major || '',
               year: data.year || '',
               description: data.description || '',
-              listOfCourses: data.listOfCourses.join(', ') || '',
             });
             setSelectedMajors(data.major ? data.major.split(',') : []);
+            setSelectedCourses(data.listOfCourses || []);
             setFirstTimeUser(Boolean(data.major && data.year));
           }
         } catch (error) {
-          console.error('Error fetching profile and majors:', error);
+          console.error('Error fetching profile, majors, and courses:', error);
         } finally {
           setLoading(false);
         }
       }
     };
-    fetchProfileAndMajors();
+    fetchProfileMajorsAndCourses();
   }, [user]);
 
   useEffect(() => {
     validateForm();
-  }, [formData, selectedMajors]);
+  }, [formData, selectedMajors, selectedCourses]);
 
   const handleInputChange = (name, value) => {
     if (name === 'phoneNumber') {
@@ -78,6 +86,7 @@ const useEditProfileForm = (user) => {
       email: !/^\S+@\S+\.\S+$/.test(formData.email),
       phoneNumber: formData.phoneNumber.replace(/\D/g, '').length !== 10,
       major: selectedMajors.length === 0,
+      listClasses: selectedCourses.length === 0,
       year: !formData.year,
     };
     setErrors(newErrors);
@@ -90,7 +99,8 @@ const useEditProfileForm = (user) => {
         const updatedProfileData = {
           ...formData,
           major: selectedMajors.join(', '),
-          listOfCourses: formData.listOfCourses.split(',').map((course) => course.trim()),
+          listOfCourses: selectedCourses,
+          //listOfCourses: formData.listOfCourses.split(',').map((course) => course.trim()),
         };
         await updateUserProfile(userId, updatedProfileData);
         return true; // Indicate success
@@ -108,6 +118,9 @@ const useEditProfileForm = (user) => {
     majorsList,
     selectedMajors,
     setSelectedMajors,
+    coursesList,
+    selectedCourses,
+    setSelectedCourses,
     handleInputChange,
     errors,
     isFormValid,

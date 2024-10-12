@@ -25,3 +25,27 @@ export const getMajors = async () => {
     return [];
   }
 };
+
+// Get list of courses from Firestore and store them as an set
+export const getCourses = async () => {
+  try {
+    const coursesCollectionRef = collection(db, 'courseData');
+    const coursesSnapshot = await getDocs(coursesCollectionRef);
+
+    const coursesSet = new Set();
+    coursesSnapshot.docs.forEach((doc) => {
+      const subject = doc.id;
+      const numbers = doc.data().numbers || [];
+
+      numbers.forEach((courseNumber) => {
+        coursesSet.add(`${subject} ${courseNumber}`); // Add unique combination to Set
+      });
+    });
+
+    // Convert Set to Array to eliminate duplicates
+    return Array.from(coursesSet);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    return [];
+  }
+};
