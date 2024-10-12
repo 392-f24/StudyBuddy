@@ -1,7 +1,6 @@
 // Functions for fetching and storing class data in Firestore
+import { db } from '@utils/firebaseConfig';
 import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-
-import { db } from '../firebaseConfig';
 
 // Get latest term from APi and update if necessary
 const checkAndInsertLatestTerm = async () => {

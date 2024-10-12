@@ -1,7 +1,6 @@
 // User profile operations (get, update, check)
+import { db } from '@utils/firebaseConfig';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-
-import { db } from '../firebaseConfig';
 
 // Unified function to fetch user profile by UID
 // (supports both regular and transaction-based fetches)

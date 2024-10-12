@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 
+import Footer from '@components/common/Footer';
+import Header from '@components/common/Header';
+import GroupsPage from '@components/GroupsPage';
+import HomePage from '@components/HomePage';
+import EditProfile from '@components/Profile/EditProfile';
+import ProfilePage from '@components/Profile/ProfilePage';
 import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@utils/theme';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-
-import Footer from './components/common/Footer';
-import Header from './components/common/Header';
-import EditProfile from './components/EditProfile';
-import GroupsPage from './components/GroupsPage';
-import HomePage from './components/HomePage';
-import ProfilePage from './components/ProfilePage';
-import { theme } from './utils/theme';
 import './App.css';
 
 const AppContent = ({ currentPage, setCurrentPage }) => {

@@ -1,9 +1,8 @@
 import React from 'react';
 
+import { useCopyToClipboard } from '@hooks/utils/useCopyToClipboard';
 import { Avatar, Box, Card, CardContent, CardHeader, Modal, Typography } from '@mui/material';
 import { useTheme, lighten } from '@mui/system';
-
-import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 export default function ProfileCard({ profileData, open, onClose }) {
   const theme = useTheme();

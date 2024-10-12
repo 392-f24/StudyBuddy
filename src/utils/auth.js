@@ -1,8 +1,7 @@
+import { fetchAndStoreClassData } from '@firestore/classData';
+import { checkUserProfile } from '@firestore/userProfile';
+import { auth } from '@utils/firebaseConfig';
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-
-import { auth } from './firebaseConfig';
-import { fetchAndStoreClassData } from './firestore/classData';
-import { checkUserProfile } from './firestore/userProfile';
 
 const provider = new GoogleAuthProvider();
 

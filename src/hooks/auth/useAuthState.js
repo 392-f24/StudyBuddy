@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { auth } from '@utils/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-
-import { auth } from '../utils/firebaseConfig';
 
 // Hook to get the current user
 export const useAuthState = () => {

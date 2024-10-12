@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { getMajors } from '../utils/firestore/general';
-import { getUserProfile, updateUserProfile } from '../utils/firestore/userProfile';
+import { getMajors } from '@firestore/general';
+import { getUserProfile, updateUserProfile } from '@firestore/userProfile';
 
 const useEditProfileForm = (user) => {
   const [loading, setLoading] = useState(true);

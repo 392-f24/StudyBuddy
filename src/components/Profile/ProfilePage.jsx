@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import useUserProfile from '@data/useUserProfile';
 import { Email, Phone, School, CalendarToday, ListAlt } from '@mui/icons-material';
 import {
   Avatar,
@@ -16,7 +17,6 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 
 import SignOutDialog from './SignOutDialog';
-import useUserProfile from '../hooks/useUserProfile';
 
 export default function ProfilePage() {
   const { id } = useParams();

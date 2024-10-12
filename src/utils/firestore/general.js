@@ -1,7 +1,6 @@
 // General Firestore functions (shared utilities)
+import { db } from '@utils/firebaseConfig';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-
-import { db } from '../firebaseConfig';
 
 // Get all users from Firestore
 export const getAllUsers = async () => {

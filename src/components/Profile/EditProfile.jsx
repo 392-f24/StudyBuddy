@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useAuthState } from '@auth/useAuthState';
+import useEditProfileForm from '@hooks/useEditProfileForm';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
   TextField,
@@ -10,9 +12,6 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
-import { useAuthState } from '../hooks/useAuthState';
-import useEditProfileForm from '../hooks/useEditProfileForm';
 
 const EditProfile = () => {
   const [user] = useAuthState();

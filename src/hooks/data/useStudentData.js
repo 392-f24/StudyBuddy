@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getAllUsers } from '../utils/firestore/general';
+import { getAllUsers } from '@firestore/general';
 
 export default function useStudentData() {
   const [studentData, setStudentData] = useState(null);

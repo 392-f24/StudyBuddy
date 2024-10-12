@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 
+import { useAuthState } from '@auth/useAuthState';
+import ProfileCard from '@components/Profile/ProfileCard';
+import StudentCard from '@components/Profile/UserCard';
+import useUserProfile from '@data/useUserProfile';
+import { resolveMatchRequest, getUserMatches } from '@firestore/matches';
+import { fetchUserProfile } from '@firestore/userProfile';
 import { Box, Stack, Typography } from '@mui/material';
-
-import ProfileCard from './ProfileCard';
-import StudentCard from './UserCard';
-import { useAuthState } from '../hooks/useAuthState';
-import useUserProfile from '../hooks/useUserProfile';
-import { resolveMatchRequest, getUserMatches } from '../utils/firestore/matches';
-import { fetchUserProfile } from '../utils/firestore/userProfile';
 
 function GroupsPage() {
   const [user] = useAuthState();

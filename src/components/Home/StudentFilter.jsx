@@ -1,5 +1,6 @@
 import React from 'react';
 
+import useMajors from '@data/useMajors';
 import {
   Box,
   Autocomplete,
@@ -11,8 +12,6 @@ import {
   Chip,
   OutlinedInput,
 } from '@mui/material';
-
-import useMajors from '../../hooks/useMajors';
 
 export default function StudentFilter({
   selectedMajors,

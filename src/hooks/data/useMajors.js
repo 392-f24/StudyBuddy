@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getMajors } from '../utils/firestore/general';
+import { getMajors } from '@firestore/general';
 
 export default function useMajors() {
   const [majorsList, setMajorsList] = useState([]);

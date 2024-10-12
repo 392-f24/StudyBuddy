@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { getMatchedUserUids } from '../utils/firestore/matches';
-import { fetchUserProfile } from '../utils/firestore/userProfile';
+import { getMatchedUserUids } from '@firestore/matches';
+import { fetchUserProfile } from '@firestore/userProfile';
 
 export default function useUserProfile(user) {
   const [userProfile, setUserProfile] = useState(null);

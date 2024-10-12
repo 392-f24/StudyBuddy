@@ -1,12 +1,11 @@
 import React from 'react';
 
+import CustomPagination from '@components/common/CustomPagination';
+import StudentCard from '@components/Profile/UserCard';
+import useStudentData from '@data/useStudentData';
+import usePagination from '@hooks/utils/usePagination';
 import { Box, Stack, Typography } from '@mui/material';
-
-import usePagination from '../../hooks/usePagination';
-import useStudentData from '../../hooks/useStudentData';
-import { createMatch } from '../../utils/firestore/matches';
-import CustomPagination from '../common/CustomPagination';
-import StudentCard from '../UserCard';
+import { createMatch } from '@utils/firestore/matches';
 
 export default function StudentList({
   userProfile,

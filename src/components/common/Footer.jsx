@@ -4,10 +4,10 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import HomeIcon from '@mui/icons-material/Home';
 import { Box, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { navigateToPage } from '@utils/navigateToPage';
 import { useNavigate } from 'react-router-dom';
 
 // import MessageIcon from '@mui/icons-material/Message';
-import { navigateToPage } from '../../utils/navigateToPage';
 
 export default function Footer({ currentPage, setCurrentPage }) {
   const navigate = useNavigate();

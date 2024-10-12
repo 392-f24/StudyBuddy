@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
+import { useAuthState } from '@auth/useAuthState';
+import StudentFilter from '@components/Home/StudentFilter';
+import StudentList from '@components/Home/StudentList';
+import useUserProfile from '@data/useUserProfile';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
-import StudentFilter from './Home/StudentFilter';
-import StudentList from './Home/StudentList';
-import { useAuthState } from '../hooks/useAuthState';
-import useUserProfile from '../hooks/useUserProfile';
 
 export default function HomePage() {
   const [user] = useAuthState();

@@ -1,3 +1,5 @@
+import { fetchUserProfile } from '@firestore/userProfile';
+import { db } from '@utils/firebaseConfig';
 import {
   doc,
   getDoc,
@@ -6,9 +8,6 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-
-import { fetchUserProfile } from './userProfile';
-import { db } from '../firebaseConfig';
 
 // Utility function to fetch a match document by ID
 const fetchMatchDocument = async (matchId) => {

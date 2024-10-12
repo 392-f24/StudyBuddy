@@ -1,11 +1,10 @@
 import React from 'react';
 
+import { useAuthNavigation } from '@auth/useAuthNavigation';
 import { ArrowBack } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography, IconButton, Avatar, Button, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-import { useAuthNavigation } from '../../hooks/useAuthNavigation';
 
 export default function Header() {
   const { user, handleProfileClick, signInAndCheckFirstTimeUser } = useAuthNavigation();
