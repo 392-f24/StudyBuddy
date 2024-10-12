@@ -46,18 +46,18 @@ export default function ProfilePage() {
         <ContentBox icon={Phone} title="Phone" content={profileData?.phoneNumber} />
       </InfoSection>
 
-      <InfoSection title="Bio">
-        <Typography variant="body2" color="textSecondary">
-          {profileData?.description}
-        </Typography>
-      </InfoSection>
-
       <InfoSection title="Study Info">
         <ContentBox icon={CalendarToday} title="Year" content={profileData?.year} />
         <CustomDivider />
         <ContentBox icon={School} title="Major" content={profileData?.major} />
         <CustomDivider />
         <ContentBox icon={ListAlt} title="Courses" content={profileData?.listOfCourses} isCourses />
+      </InfoSection>
+
+      <InfoSection title="Bio">
+        <Typography variant="body2" color="textSecondary">
+          {profileData?.description}
+        </Typography>
       </InfoSection>
 
       <ActionButtons onEditClick={handleEditClick} onSignOutClick={handleSignOutDialogOpen} />
@@ -95,7 +95,6 @@ const InfoSection = ({ title, children }) => (
     </Card>
   </>
 );
-
 const ContentBox = ({ icon: IconComponent, title, content, isCourses = false }) => (
   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -105,7 +104,9 @@ const ContentBox = ({ icon: IconComponent, title, content, isCourses = false }) 
       </Typography>
     </Box>
     {isCourses && Array.isArray(content) ? (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+      <Box
+        sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, ml: 'auto', justifyContent: 'flex-end' }}
+      >
         {content.map((course, index) => (
           <Chip key={index} label={course} />
         ))}

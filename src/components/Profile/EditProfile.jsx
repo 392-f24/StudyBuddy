@@ -20,6 +20,9 @@ const EditProfile = () => {
     majorsList,
     selectedMajors,
     setSelectedMajors,
+    coursesList,
+    selectedCourses,
+    setSelectedCourses,
     handleInputChange,
     errors,
     isFormValid,
@@ -71,6 +74,7 @@ const EditProfile = () => {
             'tel',
           )}
 
+          {/* Major Selection */}
           <Autocomplete
             multiple
             options={majorsList}
@@ -91,14 +95,39 @@ const EditProfile = () => {
             )}
           />
 
+          {/* Course Selection */}
+          <Autocomplete
+            multiple
+            options={coursesList}
+            getOptionLabel={(option) => option}
+            value={selectedCourses}
+            onChange={(event, newValue) => setSelectedCourses(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Courses"
+                error={!!errors.courses}
+                helperText={errors.courses && 'Please select your course(s)'}
+                margin="normal"
+                fullWidth
+              />
+            )}
+            filterOptions={(options, { inputValue }) => {
+              // Convert inputValue to lowercase for case-insensitive matching
+              const lowercasedInput = inputValue.toLowerCase();
+
+              // Only include options that start with the input
+              return options.filter((option) => option.toLowerCase().startsWith(lowercasedInput));
+            }}
+            sx={{ flex: 1, mb: 2, minWidth: 200, maxWidth: '100%' }}
+            freeSolo
+          />
+
+          {/* Year Selection */}
           {renderSelectField('Year', 'year', years, formData.year, handleInputChange, errors.year)}
+
+          {/* Description Field */}
           {renderTextField('Description', 'description', formData.description, handleInputChange)}
-          {renderTextField(
-            'List of Courses (comma-separated)',
-            'listOfCourses',
-            formData.listOfCourses,
-            handleInputChange,
-          )}
 
           <Button variant="contained" color="primary" type="submit" disabled={!isFormValid}>
             Save Profile
