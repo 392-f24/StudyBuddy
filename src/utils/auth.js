@@ -1,6 +1,7 @@
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
 import { auth } from './firebaseConfig';
+import { fetchAndStoreClassData } from './firestore/classData';
 import { checkUserProfile } from './firestore/userProfile';
 
 const provider = new GoogleAuthProvider();
@@ -23,6 +24,11 @@ export const handleSignIn = async () => {
   let alreadyExist = true;
   if (user) {
     alreadyExist = await checkUserProfile(user);
+  }
+  const res = await fetchAndStoreClassData();
+  if (res) {
+    console.clear();
+    console.log('Class data fetched and stored:', res);
   }
   return alreadyExist;
 };
