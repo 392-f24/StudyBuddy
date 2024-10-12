@@ -1,0 +1,54 @@
+name: Auto-label PR based on file paths
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Label PR based on changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prFiles = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const labels = new Set();
+
+            prFiles.data.forEach(file => {
+              if (file.filename.startsWith('src/components/common')) {
+                labels.add('common');
+              }
+              if (file.filename.startsWith('src/components/Profile')) {
+                labels.add('profile');
+              }
+              if (file.filename.startsWith('src/hooks')) {
+                labels.add('hooks');
+              }
+              if (file.filename.startsWith('src/utils/firebaseConfig.js') || file.filename.startsWith('src/utils/firestore') || file.filename.startsWith('src/utils/auth')) {
+                labels.add('firebase');
+              }
+              if (file.filename.startsWith('src/components/Home')) {
+                labels.add('home');
+              }
+              if (file.filename.startsWith('src/utils/theme')) {
+                labels.add('theme');
+              }
+            });
+
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: Array.from(labels)
+              });
+            }
