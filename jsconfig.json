@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@utils/*": ["src/utils/*"],
+      "@auth/*": ["src/hooks/auth/*"],
+      "@data/*": ["src/hooks/data/*"],
+      "@firestore/*": ["src/utils/firestore/*"]
+    }
+  }
+}
