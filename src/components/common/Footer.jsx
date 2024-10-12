@@ -25,7 +25,7 @@ export default function Footer({ currentPage, setCurrentPage }) {
         sx={{ backgroundColor: theme.palette.primary.light }}
       >
         <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Groups" icon={<GroupsIcon />} />
+        <BottomNavigationAction label="Matches" icon={<GroupsIcon />} />
         {/* <BottomNavigationAction label="Messages" icon={<MessageIcon />} /> */}
       </BottomNavigation>
     </Box>
