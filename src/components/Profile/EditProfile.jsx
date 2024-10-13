@@ -10,6 +10,10 @@ import {
   Autocomplete,
   IconButton,
   MenuItem,
+  Checkbox,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -119,7 +123,7 @@ const EditProfile = () => {
               // Only include options that start with the input
               return options.filter((option) => option.toLowerCase().startsWith(lowercasedInput));
             }}
-            sx={{ flex: 1, mb: 2, minWidth: 200, maxWidth: '100%' }}
+            sx={{ flex: 1, minWidth: 200, maxWidth: '100%' }}
             freeSolo
           />
 
@@ -128,6 +132,13 @@ const EditProfile = () => {
 
           {/* Description Field */}
           {renderTextField('Description', 'description', formData.description, handleInputChange)}
+
+          {/* Location Preference */}
+          <FormLabel component="legend">Location Preference</FormLabel>
+          <FormGroup row sx={{ mb: 2 }}>
+            {renderCheckbox('In Person', 'inPerson', !!formData.inPerson, handleInputChange)}
+            {renderCheckbox('Online', 'online', !!formData.online, handleInputChange)}
+          </FormGroup>
 
           <Button variant="contained" color="primary" type="submit" disabled={!isFormValid}>
             Save Profile
@@ -170,6 +181,15 @@ const renderSelectField = (label, name, options, value, onChange, error = false)
       </MenuItem>
     ))}
   </TextField>
+);
+
+const renderCheckbox = (label, name, value, onChange) => (
+  <FormControlLabel
+    control={
+      <Checkbox name={name} checked={value} onChange={(e) => onChange(name, e.target.checked)} />
+    }
+    label={label}
+  />
 );
 
 export default EditProfile;

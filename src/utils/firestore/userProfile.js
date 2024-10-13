@@ -34,6 +34,7 @@ export const checkUserProfile = async (user) => {
       major: '',
       year: '',
       open: true,
+      locationPreference: { inPerson: true, online: true },
       listOfCourses: [],
       description: '',
       incomingMatches: [],

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import useUserProfile from '@data/useUserProfile';
-import { Email, Phone, School, CalendarToday, ListAlt } from '@mui/icons-material';
+import { Email, Phone, Place, School, CalendarToday, ListAlt } from '@mui/icons-material';
 import {
   Avatar,
   Typography,
@@ -11,7 +11,9 @@ import {
   Card,
   CardContent,
   CircularProgress,
+  Checkbox,
   Chip,
+  FormControlLabel,
   useTheme,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -60,8 +62,26 @@ export default function ProfilePage() {
         </Typography>
       </InfoSection>
 
-      <ActionButtons onEditClick={handleEditClick} onSignOutClick={handleSignOutDialogOpen} />
+      <InfoSection title="Preferences">
+        <ContentBox
+          icon={Place}
+          title="Location"
+          content={
+            <>
+              <FormControlLabel
+                control={<Checkbox disabled checked={profileData?.locationPreference.inPerson} />}
+                label="In Person"
+              />
+              <FormControlLabel
+                control={<Checkbox disabled checked={profileData?.locationPreference.online} />}
+                label="Online"
+              />
+            </>
+          }
+        />
+      </InfoSection>
 
+      <ActionButtons onEditClick={handleEditClick} onSignOutClick={handleSignOutDialogOpen} />
       <SignOutDialog open={signOutDialogOpen} onClose={() => setSignOutDialogOpen(false)} />
     </Box>
   );
