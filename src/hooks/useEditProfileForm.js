@@ -18,6 +18,8 @@ const useEditProfileForm = (user) => {
     year: '',
     description: '',
     listOfCourses: '',
+    inPerson: false,
+    online: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -44,6 +46,8 @@ const useEditProfileForm = (user) => {
               major: data.major || '',
               year: data.year || '',
               description: data.description || '',
+              inPerson: data.locationPreference.inPerson,
+              online: data.locationPreference.online,
             });
             setSelectedMajors(data.major ? data.major.split(',') : []);
             setSelectedCourses(data.listOfCourses || []);
@@ -100,7 +104,7 @@ const useEditProfileForm = (user) => {
           ...formData,
           major: selectedMajors.join(', '),
           listOfCourses: selectedCourses,
-          //listOfCourses: formData.listOfCourses.split(',').map((course) => course.trim()),
+          locationPreference: { inPerson: formData.inPerson, online: formData.online },
         };
         await updateUserProfile(userId, updatedProfileData);
         return true; // Indicate success

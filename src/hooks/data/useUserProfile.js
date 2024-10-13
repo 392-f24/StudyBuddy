@@ -10,7 +10,7 @@ export default function useUserProfile(user) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       const fetchUserProfileData = async () => {
         try {
           // Fetch user profile using the unified function
@@ -38,7 +38,7 @@ export default function useUserProfile(user) {
       setUserProfile(null);
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.uid]);
 
   return { userProfile, requestedUsers, setRequestedUsers, matchedUserUids, loading };
 }
