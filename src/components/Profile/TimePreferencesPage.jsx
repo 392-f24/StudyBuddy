@@ -1,5 +1,3 @@
-// To be deleted
-// adding thid page to display the time grid for now.
 import React, { useState } from 'react';
 
 import { Box, Typography, Button } from '@mui/material';
@@ -14,16 +12,18 @@ export default function TimePreferencesPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, margin: 'auto', padding: 3 }}>
+    <Box sx={{ maxWidth: 800, margin: 'auto', padding: 3, alignItems: 'center' }}>
       <Typography variant="h4" align="center" gutterBottom>
-        Select Your Study Time Preferences
+        Time Preferences
       </Typography>
 
       <TimePreferencesGrid selectedTimes={selectedTimes} setSelectedTimes={setSelectedTimes} />
 
-      <Button variant="contained" onClick={handleSavePreferences} sx={{ marginTop: 2 }}>
-        Save Preferences
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+        <Button variant="contained" onClick={handleSavePreferences}>
+          Save Preferences
+        </Button>
+      </Box>
     </Box>
   );
 }
