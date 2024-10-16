@@ -11,9 +11,7 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Checkbox,
   Chip,
-  FormControlLabel,
   useTheme,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -59,16 +57,12 @@ export default function ProfilePage() {
           icon={Place}
           title="Location"
           content={
-            <>
-              <FormControlLabel
-                control={<Checkbox disabled checked={profileData?.locationPreference.inPerson} />}
-                label="In Person"
-              />
-              <FormControlLabel
-                control={<Checkbox disabled checked={profileData?.locationPreference.online} />}
-                label="Online"
-              />
-            </>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              {profileData?.locationPreference.inPerson && (
+                <Chip label="In Person" variant="filled" />
+              )}
+              {profileData?.locationPreference.online && <Chip label="Online" variant="filled" />}
+            </Box>
           }
         />
       </InfoSection>
