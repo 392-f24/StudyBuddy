@@ -6,6 +6,7 @@ import GroupsPage from '@components/GroupsPage';
 import HomePage from '@components/HomePage';
 import EditProfile from '@components/Profile/EditProfile';
 import ProfilePage from '@components/Profile/ProfilePage';
+import TimePreferencesPage from '@components/Profile/TimePreferencesPage';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '@utils/theme';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
@@ -25,6 +26,7 @@ const AppContent = ({ currentPage, setCurrentPage }) => {
           {/* <Route path="messages" element={<div>TBD</div>} /> */}
           <Route path="profile/:id" element={<ProfilePage />} />
           <Route path="edit-profile" element={<EditProfile />} />
+          <Route path="time-preferences" element={<TimePreferencesPage />} />
         </Routes>
       </div>
       {!isEditProfilePage && <Footer currentPage={currentPage} setCurrentPage={setCurrentPage} />}

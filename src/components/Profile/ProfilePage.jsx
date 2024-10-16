@@ -34,6 +34,10 @@ export default function ProfilePage() {
     setSignOutDialogOpen(true);
   };
 
+  const handleTimePreferencesClick = () => {
+    navigate('/time-preferences'); // Navigates to the Time Preferences page
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -81,7 +85,11 @@ export default function ProfilePage() {
         />
       </InfoSection>
 
-      <ActionButtons onEditClick={handleEditClick} onSignOutClick={handleSignOutDialogOpen} />
+      <ActionButtons
+        onEditClick={handleEditClick}
+        onSignOutClick={handleSignOutDialogOpen}
+        onTimePreferencesClick={handleTimePreferencesClick}
+      />
       <SignOutDialog open={signOutDialogOpen} onClose={() => setSignOutDialogOpen(false)} />
     </Box>
   );
@@ -139,7 +147,7 @@ const ContentBox = ({ icon: IconComponent, title, content, isCourses = false }) 
 
 const CustomDivider = () => <Divider sx={{ my: 1 }} />;
 
-const ActionButtons = ({ onEditClick, onSignOutClick }) => (
+const ActionButtons = ({ onEditClick, onSignOutClick, onTimePreferencesClick }) => (
   <Box
     sx={{
       display: 'flex',
@@ -149,13 +157,21 @@ const ActionButtons = ({ onEditClick, onSignOutClick }) => (
       mt: 4,
     }}
   >
-    <Button variant="contained" onClick={onEditClick} sx={{ mb: 2, width: '150px' }}>
+    <Button variant="contained" onClick={onEditClick} sx={{ mb: 2, width: '250px' }}>
       Edit Profile
     </Button>
     <Button
       variant="contained"
+      color="primary"
+      sx={{ mb: 2, width: '250px' }}
+      onClick={onTimePreferencesClick}
+    >
+      Time Preferences
+    </Button>
+    <Button
+      variant="contained"
       color="secondary"
-      sx={{ width: '150px', backgroundColor: 'secondary.main' }}
+      sx={{ width: '150px', backgroundColor: 'secondary.main', mt: 2 }}
       onClick={onSignOutClick}
     >
       Sign Out
