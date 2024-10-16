@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getMatchedUserUids } from '@firestore/matches';
-import { fetchUserProfile } from '@firestore/userProfile';
+import { fetchUserProfile, updateUserProfile } from '@firestore/userProfile';
 
 export default function useUserProfile(user) {
   const [userProfile, setUserProfile] = useState(null);
@@ -17,6 +17,12 @@ export default function useUserProfile(user) {
           const { profile } = await fetchUserProfile(user.uid);
 
           if (profile) {
+            if (!profile.locationPreference) {
+              // Add locationPreference field if it does not exist
+              profile.locationPreference = { inPerson: true, online: true };
+              // Update the user profile in Firestore
+              await updateUserProfile(user.uid, { locationPreference: profile.locationPreference });
+            }
             setUserProfile(profile);
             setRequestedUsers(new Set(profile.outgoingMatches.map((match) => match.requestedUser)));
 

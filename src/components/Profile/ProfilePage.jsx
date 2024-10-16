@@ -11,9 +11,7 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Checkbox,
   Chip,
-  FormControlLabel,
   useTheme,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -25,18 +23,6 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { userProfile: profileData, loading } = useUserProfile({ uid: id });
   const [signOutDialogOpen, setSignOutDialogOpen] = useState(false);
-
-  const handleEditClick = () => {
-    navigate('/edit-profile');
-  };
-
-  const handleSignOutDialogOpen = () => {
-    setSignOutDialogOpen(true);
-  };
-
-  const handleTimePreferencesClick = () => {
-    navigate('/time-preferences'); // Navigates to the Time Preferences page
-  };
 
   if (loading) {
     return <CircularProgress />;
@@ -71,24 +57,20 @@ export default function ProfilePage() {
           icon={Place}
           title="Location"
           content={
-            <>
-              <FormControlLabel
-                control={<Checkbox disabled checked={profileData?.locationPreference.inPerson} />}
-                label="In Person"
-              />
-              <FormControlLabel
-                control={<Checkbox disabled checked={profileData?.locationPreference.online} />}
-                label="Online"
-              />
-            </>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              {profileData?.locationPreference.inPerson && (
+                <Chip label="In Person" variant="filled" />
+              )}
+              {profileData?.locationPreference.online && <Chip label="Online" variant="filled" />}
+            </Box>
           }
         />
       </InfoSection>
 
       <ActionButtons
-        onEditClick={handleEditClick}
-        onSignOutClick={handleSignOutDialogOpen}
-        onTimePreferencesClick={handleTimePreferencesClick}
+        onEditClick={() => navigate('/edit-profile')}
+        onTimePreferencesClick={() => navigate('/time-preferences')}
+        onSignOutClick={() => setSignOutDialogOpen(true)}
       />
       <SignOutDialog open={signOutDialogOpen} onClose={() => setSignOutDialogOpen(false)} />
     </Box>
@@ -123,6 +105,7 @@ const InfoSection = ({ title, children }) => (
     </Card>
   </>
 );
+
 const ContentBox = ({ icon: IconComponent, title, content, isCourses = false }) => (
   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -147,7 +130,7 @@ const ContentBox = ({ icon: IconComponent, title, content, isCourses = false }) 
 
 const CustomDivider = () => <Divider sx={{ my: 1 }} />;
 
-const ActionButtons = ({ onEditClick, onSignOutClick, onTimePreferencesClick }) => (
+const ActionButtons = ({ onEditClick, onTimePreferencesClick, onSignOutClick }) => (
   <Box
     sx={{
       display: 'flex',
@@ -157,23 +140,13 @@ const ActionButtons = ({ onEditClick, onSignOutClick, onTimePreferencesClick }) 
       mt: 4,
     }}
   >
-    <Button variant="contained" onClick={onEditClick} sx={{ mb: 2, width: '250px' }}>
+    <Button variant="contained" sx={{ mb: 1, width: '250px' }} onClick={onEditClick}>
       Edit Profile
     </Button>
-    <Button
-      variant="contained"
-      color="primary"
-      sx={{ mb: 2, width: '250px' }}
-      onClick={onTimePreferencesClick}
-    >
+    <Button variant="contained" sx={{ mb: 3, width: '250px' }} onClick={onTimePreferencesClick}>
       Time Preferences
     </Button>
-    <Button
-      variant="contained"
-      color="secondary"
-      sx={{ width: '150px', backgroundColor: 'secondary.main', mt: 2 }}
-      onClick={onSignOutClick}
-    >
+    <Button variant="contained" color="secondary" sx={{ width: '150px' }} onClick={onSignOutClick}>
       Sign Out
     </Button>
   </Box>
