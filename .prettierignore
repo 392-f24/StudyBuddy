@@ -1,2 +1,8 @@
 node_modules/
 build/
+.vscode/
+dist/
+package-lock.json
+yarn.lock
+package.json
+LICENSE
