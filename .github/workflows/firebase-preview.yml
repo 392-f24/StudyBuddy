@@ -1,6 +1,5 @@
 name: Firebase Preview Deploy
 
-# Trigger the workflow on PRs to the main branch only
 on:
   pull_request:
     branches:
@@ -13,6 +12,7 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,16 +32,24 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: Deploy to Firebase Preview Channel
+        id: firebase_deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase hosting:channel:deploy pr-${{ github.event.number }} --expires 3d
+        run: |
+          firebase hosting:channel:deploy pr-${{ github.event.number }} --expires 2d | tee deploy-output.txt
 
-      # Step to post the preview link to the PR discussion
+      - name: Extract Preview URL
+        id: extract_url
+        run: |
+          # Find the actual preview URL from the Firebase deploy output
+          URL=$(grep -oP 'https:\/\/[^\s]+pr-${{ github.event.number }}[^\s]+' deploy-output.txt)
+          echo "PREVIEW_URL=${URL}" >> $GITHUB_ENV
+
       - name: Post preview link to PR
         uses: actions/github-script@v7
         with:
           script: |
-            const previewUrl = `https://pr-${{ github.event.number }}--studybuddy-8086e.web.app`;
+            const previewUrl = process.env.PREVIEW_URL;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
