@@ -1,6 +1,6 @@
 // Functions for fetching and storing class data in Firestore
 import { db } from '@utils/firebaseConfig';
-import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 
 // Get latest term from APi and update if necessary
 const checkAndInsertLatestTerm = async () => {
@@ -67,7 +67,7 @@ export const fetchAndStoreClassData = async () => {
 
     // Clear the existing courseData collection in Firestore
     const courseDataRef = collection(db, 'courseData');
-    const courseDataSnapshot = await courseDataRef.get();
+    const courseDataSnapshot = await getDocs(courseDataRef);
     courseDataSnapshot.forEach(async (doc) => {
       await setDoc(doc.ref, { numbers: [] });
     });
