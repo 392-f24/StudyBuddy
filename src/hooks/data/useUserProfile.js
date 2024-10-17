@@ -1,50 +1,60 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 
-import { getMatchedUserUids } from '@firestore/matches';
-import { fetchUserProfile, updateUserProfile } from '@firestore/userProfile';
+import { useAuthState } from '@hooks/auth/useAuthState';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-export default function useUserProfile(user) {
-  const [userProfile, setUserProfile] = useState(null);
-  const [requestedUsers, setRequestedUsers] = useState(new Set());
-  const [matchedUserUids, setMatchedUserUids] = useState(new Set());
-  const [loading, setLoading] = useState(true);
+import TimePreferencesGrid from './TimePreferencesGrid';
+import { useTimePreferences } from '../../hooks/useTimePreferences'; // Adjust path to your hooks
 
-  useEffect(() => {
-    if (user?.uid) {
-      const fetchUserProfileData = async () => {
-        try {
-          // Fetch user profile using the unified function
-          const { profile } = await fetchUserProfile(user.uid);
+export default function TimePreferencesPage() {
+  const [user] = useAuthState();
+  const navigate = useNavigate();
 
-          if (profile) {
-            if (!profile.locationPreference) {
-              // Add locationPreference field if it does not exist
-              profile.locationPreference = { inPerson: true, online: true };
-              // Update the user profile in Firestore
-              await updateUserProfile(user.uid, { locationPreference: profile.locationPreference });
-            }
-            setUserProfile(profile);
-            setRequestedUsers(new Set(profile.outgoingMatches.map((match) => match.requestedUser)));
+  const { selectedTimes, setSelectedTimes, loading, error, savePreferences } = useTimePreferences(
+    user?.uid,
+  );
 
-            const matchedUids = await getMatchedUserUids(user.uid);
-            setMatchedUserUids(new Set(matchedUids));
-          } else {
-            // Handle the case where profile is not found
-            console.warn('User profile does not exist.');
-            setUserProfile(null);
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-        }
-        setLoading(false);
-      };
+  // Redirect to home page if user is not authenticated
+  if (!user?.uid) {
+    navigate('/');
+    return null;
+  }
 
-      fetchUserProfileData();
-    } else {
-      setUserProfile(null);
-      setLoading(false);
-    }
-  }, [user?.uid]);
+  const handleSavePreferences = async () => {
+    await savePreferences();
+    navigate(`/profile/${user.uid}`);
+  };
 
-  return { userProfile, requestedUsers, setRequestedUsers, matchedUserUids, loading };
+  if (loading) {
+    return (
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ maxWidth: 800, margin: 'auto', padding: 3, alignItems: 'center' }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Time Preferences
+      </Typography>
+
+      {error && (
+        <Typography variant="body2" color="error" align="center">
+          {error}
+        </Typography>
+      )}
+
+      <TimePreferencesGrid selectedTimes={selectedTimes} setSelectedTimes={setSelectedTimes} />
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+        <Button variant="contained" onClick={handleSavePreferences}>
+          Save Preferences
+        </Button>
+      </Box>
+    </Box>
+  );
 }

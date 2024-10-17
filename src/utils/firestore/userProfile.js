@@ -114,6 +114,7 @@ export const saveTimePreferences = async (uid, selectedTimes) => {
     console.error('Error updating time preferences:', error);
   }
 };
+
 // Function to fetch time preferences from Firestore
 export const fetchTimePreferences = async (uid) => {
   try {
