@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { Box, Typography, Button } from '@mui/material';
+import { useTimePreferences } from '@data/useTimePreferences';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
 import TimePreferencesGrid from './TimePreferencesGrid';
 
 export default function TimePreferencesPage() {
-  const [selectedTimes, setSelectedTimes] = useState([]);
+  const { selectedTimes, setSelectedTimes, loading, savePreferences } = useTimePreferences();
 
-  const handleSavePreferences = () => {
-    console.log('Selected Times:', selectedTimes);
+  // Function to save preferences and navigate back to profile page
+  const handleSavePreferences = async () => {
+    await savePreferences();
   };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ maxWidth: 800, margin: 'auto', padding: 3, alignItems: 'center' }}>

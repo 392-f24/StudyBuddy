@@ -1,7 +1,6 @@
 // User profile operations (get, update, check)
 import { db } from '@utils/firebaseConfig';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-
 // Unified function to fetch user profile by UID
 // (supports both regular and transaction-based fetches)
 export const fetchUserProfile = async (uid, transaction) => {
@@ -41,6 +40,7 @@ export const checkUserProfile = async (user) => {
       outgoingMatches: [],
       currentMatches: [],
       pastMatches: [],
+      timePreferences: [], //Addingdefault empty array for storing time preferences
     };
 
     // Fetch the user profile to check if it exists
@@ -95,10 +95,40 @@ export const updateUserProfile = async (uid, updates) => {
     console.error('Error updating user profile:', error);
   }
 };
-
 // Example usage:
 // await updateUserProfile(user.uid, {
 //   name: "New Name",
 //   email: "newemail@example.com",
 //   major: "Computer Science"
 // });
+
+// Function to save/update time preferences in Firebase
+export const saveTimePreferences = async (uid, selectedTimes) => {
+  try {
+    const userDocRef = doc(db, 'users', uid);
+    await updateDoc(userDocRef, {
+      timePreferences: selectedTimes, // Update timePreferences field
+    });
+    console.log('Time preferences updated successfully.');
+  } catch (error) {
+    console.error('Error updating time preferences:', error);
+  }
+};
+
+// Function to fetch time preferences from Firestore
+export const fetchTimePreferences = async (uid) => {
+  try {
+    const userDocRef = doc(db, 'users', uid);
+    // Getting the user's document from firebase
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (userDocSnap.exists()) {
+      const data = userDocSnap.data();
+      // Return saved timePreferences or empty array if none.
+      return data.timePreferences || [];
+    }
+  } catch (error) {
+    console.error('Error fetching time preferences:', error);
+    return [];
+  }
+};
