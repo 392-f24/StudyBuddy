@@ -33,6 +33,7 @@ export const useTimePreferences = () => {
   const savePreferences = async () => {
     try {
       await saveTimePreferences(userId, selectedTimes);
+      navigate(`/profile/${userId}`);
     } catch (err) {
       console.error('Failed to save time preferences');
     }
