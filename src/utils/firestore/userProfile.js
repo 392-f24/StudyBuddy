@@ -1,7 +1,6 @@
 // User profile operations (get, update, check)
 import { db } from '@utils/firebaseConfig';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-
 // Unified function to fetch user profile by UID
 // (supports both regular and transaction-based fetches)
 export const fetchUserProfile = async (uid, transaction) => {
@@ -41,7 +40,7 @@ export const checkUserProfile = async (user) => {
       outgoingMatches: [],
       currentMatches: [],
       pastMatches: [],
-      timePreferences: [], // Adding a default empty array for storing the time preferences
+      timePreferences: [], //Addingdefault empty array for storing time preferences
     };
 
     // Fetch the user profile to check if it exists
@@ -96,7 +95,6 @@ export const updateUserProfile = async (uid, updates) => {
     console.error('Error updating user profile:', error);
   }
 };
-
 // Example usage:
 // await updateUserProfile(user.uid, {
 //   name: "New Name",
@@ -109,31 +107,27 @@ export const saveTimePreferences = async (uid, selectedTimes) => {
   try {
     const userDocRef = doc(db, 'users', uid);
     await updateDoc(userDocRef, {
-      timePreferences: selectedTimes, // Update the timePreferences field
+      timePreferences: selectedTimes, // Update timePreferences field
     });
     console.log('Time preferences updated successfully.');
   } catch (error) {
     console.error('Error updating time preferences:', error);
   }
 };
-
-
 // Function to fetch time preferences from Firestore
 export const fetchTimePreferences = async (uid) => {
   try {
     const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef); // Getting the user's document from firebase
+    // Getting the user's document from firebase
+    const userDocSnap = await getDoc(userDocRef);
 
     if (userDocSnap.exists()) {
       const data = userDocSnap.data();
-      return data.timePreferences || []; // Return saved timePreferences or an empty array if there aren't any.
-    } else {
-      console.log('No such document for user:', uid);
-      return [];
-    }
+      // Return saved timePreferences or empty array if none.
+      return data.timePreferences || [];
+    } //git commit --no-verify -m
   } catch (error) {
     console.error('Error fetching time preferences:', error);
     return [];
   }
 };
-
