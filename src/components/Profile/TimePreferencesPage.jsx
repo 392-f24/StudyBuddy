@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { useTimePreferences } from '@hooks/useTimePreferences';
+import { useTimePreferences } from '@data/useTimePreferences';
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
 import TimePreferencesGrid from './TimePreferencesGrid';
 
 export default function TimePreferencesPage() {
-  const { selectedTimes, setSelectedTimes, loading, error, savePreferences } = useTimePreferences();
+  const { selectedTimes, setSelectedTimes, loading, savePreferences } = useTimePreferences();
 
   // Function to save preferences and navigate back to profile page
   const handleSavePreferences = async () => {
@@ -28,12 +28,6 @@ export default function TimePreferencesPage() {
       <Typography variant="h4" align="center" gutterBottom>
         Time Preferences
       </Typography>
-
-      {error && (
-        <Typography variant="body2" color="error" align="center">
-          {error}
-        </Typography>
-      )}
 
       <TimePreferencesGrid selectedTimes={selectedTimes} setSelectedTimes={setSelectedTimes} />
 
