@@ -20,14 +20,10 @@ jobs:
             // Filter out the PR author from the list of reviewers
             const availableReviewers = reviewers.filter(reviewer => reviewer !== prAuthor);
 
-            // Shuffle the reviewers
-            const shuffledReviewers = availableReviewers.sort(() => 0.5 - Math.random());
-            const selectedReviewers = shuffledReviewers.slice(0, 2); // Select 2 reviewers
-
-            // Assign the selected reviewers to the PR
+            // Assign all other team members to review to the PR
             await github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number, // Use the PR number
-              reviewers: selectedReviewers
+              reviewers: availableReviewers
             });
