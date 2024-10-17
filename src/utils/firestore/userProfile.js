@@ -41,6 +41,7 @@ export const checkUserProfile = async (user) => {
       outgoingMatches: [],
       currentMatches: [],
       pastMatches: [],
+      timePreferences: [], // Adding a default empty array for storing the time preferences
     };
 
     // Fetch the user profile to check if it exists
@@ -102,3 +103,37 @@ export const updateUserProfile = async (uid, updates) => {
 //   email: "newemail@example.com",
 //   major: "Computer Science"
 // });
+
+// Function to save/update time preferences in Firebase
+export const saveTimePreferences = async (uid, selectedTimes) => {
+  try {
+    const userDocRef = doc(db, 'users', uid);
+    await updateDoc(userDocRef, {
+      timePreferences: selectedTimes, // Update the timePreferences field
+    });
+    console.log('Time preferences updated successfully.');
+  } catch (error) {
+    console.error('Error updating time preferences:', error);
+  }
+};
+
+
+// Function to fetch time preferences from Firestore
+export const fetchTimePreferences = async (uid) => {
+  try {
+    const userDocRef = doc(db, 'users', uid);
+    const userDocSnap = await getDoc(userDocRef); // Getting the user's document from firebase
+
+    if (userDocSnap.exists()) {
+      const data = userDocSnap.data();
+      return data.timePreferences || []; // Return saved timePreferences or an empty array if there aren't any.
+    } else {
+      console.log('No such document for user:', uid);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching time preferences:', error);
+    return [];
+  }
+};
+
