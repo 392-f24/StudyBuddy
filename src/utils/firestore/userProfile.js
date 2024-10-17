@@ -125,7 +125,7 @@ export const fetchTimePreferences = async (uid) => {
       const data = userDocSnap.data();
       // Return saved timePreferences or empty array if none.
       return data.timePreferences || [];
-    } //git commit --no-verify -m
+    }
   } catch (error) {
     console.error('Error fetching time preferences:', error);
     return [];
