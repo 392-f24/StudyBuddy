@@ -15,15 +15,39 @@ import './App.css';
 const AppContent = ({ currentPage, setCurrentPage }) => {
   const location = useLocation();
   const isEditProfilePage = location.pathname === '/edit-profile';
+  const isHomePage = location.pathname === '/'; // Check if we are on the HomePage
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // State for the filter visibility
+
+  const handleFilterToggle = (forceClose = null) => {
+    if (forceClose === false) {
+      setIsFilterOpen(false); // Force close the filter
+    } else {
+      setIsFilterOpen((prev) => !prev); // Toggle the filter
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
-      {!isEditProfilePage && <Header />}
+      {!isEditProfilePage && (
+        <Header
+          onFilterToggle={handleFilterToggle} // Pass filter toggle handler
+          isFilterOpen={isFilterOpen} // Pass filter open state
+          showFilter={isHomePage} // Only show filter button on HomePage
+        />
+      )}
       <div className="container">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/"
+            element={
+              <HomePage
+                isFilterOpen={isFilterOpen}
+                handleFilterToggle={handleFilterToggle} // Pass the filter logic to HomePage
+              />
+            }
+          />
           <Route path="groups" element={<GroupsPage />} />
-          {/* <Route path="messages" element={<div>TBD</div>} /> */}
           <Route path="profile/:id" element={<ProfilePage />} />
           <Route path="edit-profile" element={<EditProfile />} />
           <Route path="time-preferences" element={<TimePreferencesPage />} />

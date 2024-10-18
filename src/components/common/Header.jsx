@@ -2,11 +2,12 @@ import React from 'react';
 
 import { useAuthNavigation } from '@auth/useAuthNavigation';
 import { ArrowBack } from '@mui/icons-material';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { AppBar, Toolbar, Typography, IconButton, Avatar, Button, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function Header() {
+export default function Header({ onFilterToggle, isFilterOpen, showFilter }) {
   const { user, handleProfileClick, signInAndCheckFirstTimeUser } = useAuthNavigation();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -19,7 +20,6 @@ export default function Header() {
     location.pathname === '/messages';
 
   const handleBackButtonClick = () => {
-    // If we came from edit-profile or a similar page, navigate home instead of going back.
     if (location.state?.fromEditProfile) {
       navigate('/'); // Redirect to the home page
     } else if (window.history.length > 2) {
@@ -32,16 +32,26 @@ export default function Header() {
   return (
     <AppBar position="sticky" sx={{ backgroundColor: theme.palette.primary.light, color: '#000' }}>
       <Toolbar sx={{ position: 'relative', justifyContent: 'space-between' }}>
-        {/* Left side: Back button or placeholder */}
-        {!isRootPage ? (
-          <IconButton edge="start" color="inherit" onClick={handleBackButtonClick}>
-            <ArrowBack />
-          </IconButton>
-        ) : (
-          <Box sx={{ width: '48px' }} />
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {showFilter && (
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={onFilterToggle}
+              sx={{ marginRight: 1 }}
+            >
+              <FilterAltIcon color={isFilterOpen ? 'secondary' : 'inherit'} />
+            </IconButton>
+          )}
+          {!isRootPage ? (
+            <IconButton edge="start" color="inherit" onClick={handleBackButtonClick}>
+              <ArrowBack />
+            </IconButton>
+          ) : (
+            <Box sx={{ width: '48px' }} /> // Placeholder if no back button is needed
+          )}
+        </Box>
 
-        {/* Centered text */}
         <Typography
           variant="h6"
           sx={{
@@ -55,7 +65,6 @@ export default function Header() {
           StudyBuddy
         </Typography>
 
-        {/* Right side: Sign In button or user avatar */}
         {!isProfilePage ? (
           user ? (
             <IconButton edge="end" color="inherit" onClick={handleProfileClick}>
