@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 export default function HomePage() {
   const [user] = useAuthState();
   const { userProfile, requestedUsers, setRequestedUsers, matchedUserUids, loading } =
-    useUserProfile(user);
+    useUserProfile(user, true);
   const [selectedMajors, setSelectedMajors] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
