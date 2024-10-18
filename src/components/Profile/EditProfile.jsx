@@ -1,6 +1,8 @@
 import React from 'react';
 
 import { useAuthState } from '@auth/useAuthState';
+import useCourses from '@data/useCourses';
+import useMajors from '@data/useMajors';
 import useEditProfileForm from '@hooks/useEditProfileForm';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
@@ -19,12 +21,12 @@ import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
   const [user] = useAuthState();
+  const majorsList = useMajors();
+  const coursesList = useCourses();
   const {
     formData,
-    majorsList,
     selectedMajors,
     setSelectedMajors,
-    coursesList,
     selectedCourses,
     setSelectedCourses,
     handleInputChange,

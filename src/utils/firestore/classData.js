@@ -32,8 +32,7 @@ const checkAndInsertLatestTerm = async () => {
 
     return LatestTermID;
   } catch (error) {
-    console.error('Error handling latest term:', error);
-    return null;
+    throw new Error(`Error handling latest term: ${error}`);
   }
 };
 
@@ -41,11 +40,12 @@ const checkAndInsertLatestTerm = async () => {
 export const fetchAndStoreClassData = async () => {
   try {
     const LatestTermID = await checkAndInsertLatestTerm();
-    if (!LatestTermID) return true;
+    if (!LatestTermID) return false;
 
     const ClassResponse = await fetch(`https://cdn.dil.sh/paper-data/${LatestTermID}.json`);
-    if (!ClassResponse.ok)
+    if (!ClassResponse.ok) {
       throw new Error(`Failed to fetch class data: ${ClassResponse.statusText}`);
+    }
 
     const ClassData = await ClassResponse.json();
 
@@ -82,39 +82,5 @@ export const fetchAndStoreClassData = async () => {
   } catch (error) {
     console.error('Error fetching or saving data:', error);
     return false;
-  }
-};
-
-// Fetch all class data from Firestore (for a specific subject)
-export const fetchClassData = async (subject) => {
-  try {
-    const classDocRef = doc(collection(db, 'courseData'), subject);
-    const classSnapshot = await getDoc(classDocRef);
-
-    if (!classSnapshot.exists()) {
-      throw new Error(`No class data found for subject ${subject} in Firestore`);
-    }
-
-    return classSnapshot.data().numbers;
-  } catch (error) {
-    console.error('Error fetching class data:', error);
-    return null;
-  }
-};
-
-// Fetch by Specific subject
-export const fetchBySubject = async (subject) => {
-  try {
-    const classDocRef = doc(collection(db, 'courseData'), subject);
-    const classSnapshot = await getDoc(classDocRef);
-
-    if (!classSnapshot.exists()) {
-      throw new Error(`No class data found for subject ${subject} in Firestore`);
-    }
-
-    return classSnapshot.data().numbers;
-  } catch (error) {
-    console.error('Error fetching class data:', error);
-    return null;
   }
 };

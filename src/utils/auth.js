@@ -24,11 +24,16 @@ export const handleSignIn = async () => {
   if (user) {
     alreadyExist = await checkUserProfile(user);
   }
-  const res = await fetchAndStoreClassData();
-  if (res) {
-    console.clear();
-    console.log('Class data fetched and stored:', res);
-  }
+  // ! TEMPORARY REMOVE: Fetch and store class data
+  // TODO: uncomment this code after the demo
+
+  // const res = await fetchAndStoreClassData();
+  // console.clear();
+  // if (res) {
+  //   console.warn('Class data fetched and stored:', res);
+  // } else {
+  //   console.warn('Classes not update:', res);
+  // }
   return alreadyExist;
 };
 
