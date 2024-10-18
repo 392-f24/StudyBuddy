@@ -1,5 +1,5 @@
-import { fetchAndStoreClassData } from '@firestore/classData';
-import { checkUserProfile } from '@firestore/userProfile';
+// import { fetchAndStoreClassData } from '@firestore/classData';
+import { createFirstUserProfile, fetchUserProfile } from '@firestore/userProfile';
 import { auth } from '@utils/firebaseConfig';
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
@@ -20,21 +20,27 @@ const signInWithGoogle = async () => {
 //     Return true: user already exists in the database
 export const handleSignIn = async () => {
   const user = await signInWithGoogle();
-  let alreadyExist = true;
-  if (user) {
-    alreadyExist = await checkUserProfile(user);
-  }
-  // ! TEMPORARY REMOVE: Fetch and store class data
-  // TODO: uncomment this code after the demo
 
-  // const res = await fetchAndStoreClassData();
-  // console.clear();
-  // if (res) {
-  //   console.warn('Class data fetched and stored:', res);
-  // } else {
-  //   console.warn('Classes not update:', res);
-  // }
-  return alreadyExist;
+  if (user) {
+    const { profile } = await fetchUserProfile(user.uid);
+
+    if (!profile) {
+      await createFirstUserProfile(user);
+      return false;
+    }
+    // ! TEMPORARY REMOVE: Fetch and store class data
+    // TODO: uncomment this code after the demo
+
+    // const res = await fetchAndStoreClassData();
+    // console.clear();
+    // if (res) {
+    //   console.warn('Class data fetched and stored:', res);
+    // } else {
+    //   console.warn('Classes not update:', res);
+    // }
+    return true;
+  }
+  return false;
 };
 
 // Handle Sign-Out

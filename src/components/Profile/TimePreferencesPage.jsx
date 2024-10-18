@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTimePreferences } from '@data/useTimePreferences';
+import useTimePreferences from '@data/useTimePreferences';
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
 import TimePreferencesGrid from './TimePreferencesGrid';
