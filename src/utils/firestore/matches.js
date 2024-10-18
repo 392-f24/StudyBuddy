@@ -79,6 +79,49 @@ export const createMatch = async (users, location, description = '') => {
   }
 };
 
+// Remove an existing match
+export const removeMatch = async (matchId) => {
+  if (!matchId) {
+    throw new Error('Missing match ID');
+  }
+
+  const matchRef = doc(db, 'matches', matchId);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      const matchDoc = await transaction.get(matchRef);
+
+      if (!matchDoc.exists()) {
+        throw new Error('Match not found');
+      }
+
+      const matchData = matchDoc.data();
+      const user0 = matchData.users[0];
+      const user1 = matchData.users[1];
+
+      // Fetch the user profiles from Firestore
+      const user0Ref = doc(db, 'users', user0.uid);
+      const user1Ref = doc(db, 'users', user1.uid);
+
+      // Remove the match reference from both users
+      transaction.update(user0Ref, {
+        currentMatches: arrayRemove(matchId),
+      });
+
+      transaction.update(user1Ref, {
+        currentMatches: arrayRemove(matchId),
+      });
+
+      // Finally, delete the match document
+      transaction.delete(matchRef);
+    });
+
+    console.log('Match removed with ID: ', matchId);
+  } catch (error) {
+    console.error('Error removing match:', error);
+  }
+};
+
 // Get all user matches
 export const getUserMatches = async (uid) => {
   try {
