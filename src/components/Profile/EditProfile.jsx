@@ -112,8 +112,8 @@ const EditProfile = () => {
               <TextField
                 {...params}
                 label="Courses"
-                error={!!errors.courses}
-                helperText={errors.courses && 'Please select your course(s)'}
+                error={errors.coursesList}
+                helperText={errors.coursesList && 'Please select your course(s)'}
                 margin="normal"
                 fullWidth
               />
@@ -138,8 +138,8 @@ const EditProfile = () => {
           {/* Location Preference */}
           <FormLabel component="legend">Location Preference</FormLabel>
           <FormGroup row sx={{ mb: 2 }}>
-            {renderCheckbox('In Person', 'inPerson', !!formData.inPerson, handleInputChange)}
-            {renderCheckbox('Online', 'online', !!formData.online, handleInputChange)}
+            {renderCheckbox('In Person', 'inPerson', formData.inPerson, handleInputChange)}
+            {renderCheckbox('Online', 'online', formData.online, handleInputChange)}
           </FormGroup>
 
           <Button variant="contained" color="primary" type="submit" disabled={!isFormValid}>

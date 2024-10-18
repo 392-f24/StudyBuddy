@@ -40,7 +40,7 @@ const useEditProfileForm = (user) => {
             });
             setSelectedMajors(data.major ? data.major.split(',') : []);
             setSelectedCourses(data.listOfCourses || []);
-            setFirstTimeUser(Boolean(data.major && data.year));
+            setFirstTimeUser(!!(data.major && data.year));
           }
         } catch (error) {
           console.error('Error fetching profile, majors, and courses:', error);
@@ -79,7 +79,7 @@ const useEditProfileForm = (user) => {
       email: !/^\S+@\S+\.\S+$/.test(formData.email),
       phoneNumber: formData.phoneNumber.replace(/\D/g, '').length !== 10,
       major: selectedMajors.length === 0,
-      listClasses: selectedCourses.length === 0,
+      coursesList: selectedCourses.length === 0,
       year: !formData.year,
     };
     setErrors(newErrors);
