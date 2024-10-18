@@ -4,7 +4,12 @@ import { useAuthState } from '@auth/useAuthState';
 import ProfileCard from '@components/Profile/ProfileCard';
 import StudentCard from '@components/Profile/UserCard';
 import useUserProfile from '@data/useUserProfile';
-import { resolveMatchRequest, getUserMatches } from '@firestore/matches';
+import {
+  resolveMatchRequest,
+  getUserMatches,
+  removeMatch,
+  getMatchedUserUids,
+} from '@firestore/matches';
 import { fetchUserProfile } from '@firestore/userProfile';
 import { Box, Stack, Typography } from '@mui/material';
 
@@ -75,6 +80,32 @@ function GroupsPage() {
     }
   };
 
+  const handleRemoveMatch = async (profile) => {
+    try {
+      // Get the matched user IDs for the current user
+      const matchedUserUids = await getMatchedUserUids(userProfile.uid);
+
+      // Check if this profile is one of the matches
+      const sharedMatchId = profile.currentMatches.find((matchId) =>
+        matchedUserUids.includes(profile.uid),
+      );
+
+      if (!sharedMatchId) {
+        console.error('Match not found for the given profile');
+        return;
+      }
+
+      await removeMatch(sharedMatchId);
+
+      // Update the matchProfiles state by filtering out the removed match
+      setMatchProfiles((prevProfiles) =>
+        prevProfiles.filter((matchProfile) => matchProfile.uid !== profile.uid),
+      );
+    } catch (error) {
+      console.error('Error handling match removal:', error);
+    }
+  };
+
   const handleOpenProfileModal = (profile) => {
     setSelectedProfile(profile);
     setOpenProfileModal(true);
@@ -113,6 +144,12 @@ function GroupsPage() {
               {
                 label: 'View Profile',
                 onClick: () => handleOpenProfileModal(profile),
+              },
+              {
+                label: 'Unmatch',
+                onClick: () => handleRemoveMatch(profile),
+                variant: 'outlined',
+                color: 'secondary',
               },
             ];
             return <StudentCard key={index} studentUserProfile={profile} actions={actions} />;
