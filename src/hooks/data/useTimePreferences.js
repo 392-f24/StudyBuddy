@@ -1,33 +1,24 @@
 import { useState, useEffect } from 'react';
 
 import { useAuthState } from '@auth/useAuthState';
-import { fetchTimePreferences, saveTimePreferences } from '@firestore/userProfile';
+import useUserProfile from '@data/useUserProfile';
+import { saveTimePreferences } from '@firestore/userProfile';
 import { useNavigate } from 'react-router-dom';
 
-export const useTimePreferences = () => {
+const useTimePreferences = () => {
   const [selectedTimes, setSelectedTimes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [user] = useAuthState();
   const navigate = useNavigate();
 
   const userId = user?.uid;
+  const { userProfile, loading } = useUserProfile();
 
-  // Check if user is authenticated, if not, redirect to home
+  // Set selected times from user profile only when userProfile is updated
   useEffect(() => {
-    // Fetch saved time preferences when the component loads
-    const loadPreferences = async () => {
-      try {
-        const fetchedTimes = await fetchTimePreferences(userId);
-        setSelectedTimes(fetchedTimes);
-      } catch (err) {
-        console.error('Failed to load time preferences');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPreferences();
-  }, [userId, navigate]);
+    if (userProfile && userProfile.timePreferences) {
+      setSelectedTimes(userProfile.timePreferences);
+    }
+  }, [userProfile]);
 
   // Function to save the selected time preferences
   const savePreferences = async () => {
@@ -46,3 +37,5 @@ export const useTimePreferences = () => {
     savePreferences,
   };
 };
+
+export default useTimePreferences;

@@ -1,23 +1,27 @@
 import { fetchUserProfile } from '@firestore/userProfile';
 import { db } from '@utils/firebaseConfig';
 import {
+  query,
+  where,
+  getDocs,
   doc,
-  getDoc,
-  collection,
   runTransaction,
   arrayUnion,
   arrayRemove,
+  collection,
 } from 'firebase/firestore';
 
-// Utility function to fetch a match document by ID
-const fetchMatchDocument = async (matchId) => {
+// Batch fetch match documents using getDocs by match IDs
+const fetchMatchDocuments = async (matchIds) => {
   try {
-    const matchDocRef = doc(db, 'matches', matchId);
-    const matchSnapshot = await getDoc(matchDocRef);
-    return matchSnapshot.exists() ? matchSnapshot.data() : null;
+    const q = query(collection(db, 'matches'), where('__name__', 'in', matchIds));
+    const querySnapshot = await getDocs(q);
+
+    // Return all match data from Firestore
+    return querySnapshot.docs.map((doc) => doc.data());
   } catch (error) {
-    console.error('Error fetching match document:', error);
-    return null;
+    console.error('Error fetching match documents:', error);
+    return [];
   }
 };
 
@@ -78,34 +82,31 @@ export const createMatch = async (users, location, description = '') => {
 // Get all user matches
 export const getUserMatches = async (uid) => {
   try {
-    const userRef = doc(db, 'users', uid);
-    const userSnapshot = await getDoc(userRef);
-    if (!userSnapshot.exists()) {
+    const { profile: userProfile } = await fetchUserProfile(uid); // Use fetchUserProfile
+    if (!userProfile) {
       throw new Error('User profile does not exist');
     }
 
-    const { currentMatches } = userSnapshot.data();
+    const { currentMatches } = userProfile;
     if (!currentMatches || currentMatches.length === 0) return [];
 
-    // Fetch each match and gather the profiles of other users in the match
-    const matchProfiles = await Promise.all(
-      currentMatches.map(async (matchId) => {
-        const matchData = await fetchMatchDocument(matchId);
-        if (!matchData) return null;
+    // Fetch match documents in a batch using getDocs
+    const matchDocs = await fetchMatchDocuments(currentMatches);
 
-        // Get all users in the match except the current user
-        const otherUsers = matchData.users.filter((user) => user.uid !== uid);
-        const profiles = await Promise.all(
-          otherUsers.map(async (user) => {
-            const { profile } = await fetchUserProfile(user.uid);
-            return profile || null;
-          }),
-        );
-        return profiles.filter((profile) => profile !== null);
-      }),
+    const profiles = await Promise.all(
+      matchDocs.map((matchData) =>
+        Promise.all(
+          matchData.users
+            .filter((user) => user.uid !== uid)
+            .map(async (user) => {
+              const { profile } = await fetchUserProfile(user.uid);
+              return profile || null;
+            }),
+        ),
+      ),
     );
 
-    return matchProfiles.flat().filter((profile) => profile !== null);
+    return profiles.flat().filter((profile) => profile !== null);
   } catch (error) {
     console.error('Error fetching user matches:', error);
     return [];
@@ -145,23 +146,21 @@ export const resolveMatchRequest = async (requestedUserUid, requestingUserUid, m
 // Get matched user UIDs for a specific user
 export const getMatchedUserUids = async (userUid) => {
   try {
-    const userRef = doc(db, 'users', userUid);
-    const userSnapshot = await getDoc(userRef);
-
-    if (!userSnapshot.exists()) {
+    const { profile: userProfile } = await fetchUserProfile(userUid); // Use fetchUserProfile
+    if (!userProfile) {
       throw new Error('User profile does not exist');
     }
 
-    const { currentMatches } = userSnapshot.data();
+    const { currentMatches } = userProfile;
     if (!currentMatches || currentMatches.length === 0) return [];
 
     const matchedUserUids = new Set();
 
     await Promise.all(
       currentMatches.map(async (matchId) => {
-        const matchData = await fetchMatchDocument(matchId);
-        if (matchData) {
-          matchData.users.forEach((user) => {
+        const matchData = await fetchMatchDocuments([matchId]); // Use batch fetch here
+        if (matchData.length > 0) {
+          matchData[0].users.forEach((user) => {
             if (user.uid !== userUid) {
               matchedUserUids.add(user.uid);
             }
