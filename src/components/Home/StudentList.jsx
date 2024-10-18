@@ -22,6 +22,8 @@ export default function StudentList({
     (profile) =>
       profile.uid !== userProfile.uid &&
       !matchedUserUids.has(profile.uid) &&
+      profile.major !== '' &&
+      profile.year !== '' &&
       (selectedMajors.length === 0 || selectedMajors.includes(profile.major)) &&
       (selectedCourses.length === 0 ||
         profile.courses?.some((course) => selectedCourses.includes(course))) &&
