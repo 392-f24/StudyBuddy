@@ -17,18 +17,25 @@ export default function StudentList({
   selectedYears,
 }) {
   const studentData = useStudentData();
+  const filteredStudentData = studentData?.filter((profile) => {
+    const profileCourses = profile.listOfCourses || []; // Ensure profile has courses
+    // eslint-disable-next-line max-len
+    const normalizedSelectedCourses = selectedCourses.map((course) => course.toLowerCase()); // Normalize selected courses to lowercase
 
-  const filteredStudentData = studentData?.filter(
-    (profile) =>
-      profile.uid !== userProfile.uid &&
-      !matchedUserUids.has(profile.uid) &&
-      profile.major !== '' &&
-      profile.year !== '' &&
-      (selectedMajors.length === 0 || selectedMajors.includes(profile.major)) &&
-      (selectedCourses.length === 0 ||
-        profile.courses?.some((course) => selectedCourses.includes(course))) &&
-      (selectedYears.length === 0 || selectedYears.includes(profile.year)),
-  );
+    // Ensure filtering conditions for majors, courses, and years
+    return (
+      profile.uid !== userProfile.uid && // Exclude current user
+      !matchedUserUids.has(profile.uid) && // Exclude already matched users
+      profile.major !== '' && // Ensure major is defined
+      profile.year !== '' && // Ensure year is defined
+      (selectedMajors.length === 0 || selectedMajors.includes(profile.major)) && // Filter by major
+      (selectedCourses.length === 0 || // Filter by courses (case-insensitive match)
+        profileCourses.some((course) =>
+          normalizedSelectedCourses.includes(course.toLowerCase()),
+        )) &&
+      (selectedYears.length === 0 || selectedYears.includes(profile.year)) // Filter by year
+    );
+  });
 
   const {
     currentData: studentsToDisplay,
