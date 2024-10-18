@@ -19,10 +19,14 @@ function GroupsPage() {
   const [incomingRequestProfiles, setIncomingRequestProfiles] = useState([]);
   const [outgoingRequestProfiles, setOutgoingRequestProfiles] = useState([]);
   const [matchProfiles, setMatchProfiles] = useState([]);
-  const [selectedProfile, setSelectedProfile] = useState(null); // State for selected user profile
-  const [openProfileModal, setOpenProfileModal] = useState(false); // State for modal visibility
-  const [openAvailabilityModal, setOpenAvailabilityModal] = useState(false); // Modal visibility state
-  const [selectedTimePreferences, setSelectedTimePreferences] = useState([]); // State to store time preferences
+  // State for selected user profile
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  // State for modal visibility
+  const [openProfileModal, setOpenProfileModal] = useState(false);
+  // Modal visibility state
+  const [openAvailabilityModal, setOpenAvailabilityModal] = useState(false);
+  // State to store time preferences
+  const [selectedTimePreferences, setSelectedTimePreferences] = useState([]);
 
 
   // Combined useEffect for fetching incoming, outgoing, and current matches
