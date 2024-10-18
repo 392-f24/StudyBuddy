@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { getMajors, getCourses } from '@firestore/general';
-import { getUserProfile, updateUserProfile } from '@firestore/userProfile';
+import { fetchUserProfile, updateUserProfile } from '@firestore/userProfile';
 
 const useEditProfileForm = (user) => {
   const [loading, setLoading] = useState(true);
-  const [majorsList, setMajorsList] = useState([]);
   const [selectedMajors, setSelectedMajors] = useState([]);
-  const [coursesList, setCoursesList] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState([]);
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,14 +26,7 @@ const useEditProfileForm = (user) => {
     const fetchProfileMajorsAndCourses = async () => {
       if (user && user.uid) {
         try {
-          const [data, majorsFromDb, coursesFromDb] = await Promise.all([
-            getUserProfile(user.uid),
-            getMajors(),
-            getCourses(),
-          ]);
-          setMajorsList(majorsFromDb);
-          setCoursesList(coursesFromDb); // Set available courses
-
+          const { profile: data } = await fetchUserProfile(user.uid);
           if (data) {
             setFormData({
               name: data.name || '',
@@ -46,8 +35,8 @@ const useEditProfileForm = (user) => {
               major: data.major || '',
               year: data.year || '',
               description: data.description || '',
-              inPerson: data.locationPreference.inPerson,
-              online: data.locationPreference.online,
+              inPerson: data.locationPreference.inPerson || false,
+              online: data.locationPreference.online || false,
             });
             setSelectedMajors(data.major ? data.major.split(',') : []);
             setSelectedCourses(data.listOfCourses || []);
@@ -119,10 +108,8 @@ const useEditProfileForm = (user) => {
   return {
     formData,
     setFormData,
-    majorsList,
     selectedMajors,
     setSelectedMajors,
-    coursesList,
     selectedCourses,
     setSelectedCourses,
     handleInputChange,
