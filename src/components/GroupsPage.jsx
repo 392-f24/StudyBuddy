@@ -19,14 +19,10 @@ function GroupsPage() {
   const [incomingRequestProfiles, setIncomingRequestProfiles] = useState([]);
   const [outgoingRequestProfiles, setOutgoingRequestProfiles] = useState([]);
   const [matchProfiles, setMatchProfiles] = useState([]);
-  // State for selected user profile
-  const [selectedProfile, setSelectedProfile] = useState(null);
-  // State for modal visibility
-  const [openProfileModal, setOpenProfileModal] = useState(false);
-  // Modal visibility state
-  const [openAvailabilityModal, setOpenAvailabilityModal] = useState(false);
-  // State to store time preferences
-  const [selectedTimePreferences, setSelectedTimePreferences] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState(null); // State for selected user profile
+  const [openProfileModal, setOpenProfileModal] = useState(false); // State for modal visibility
+  const [openAvailabilityModal, setOpenAvailabilityModal] = useState(false); // Modal visibility state
+  const [selectedTimePreferences, setSelectedTimePreferences] = useState([]); // State to store time preferences
 
 
   // Combined useEffect for fetching incoming, outgoing, and current matches
@@ -169,15 +165,14 @@ function GroupsPage() {
                 onClick: () => handleOpenProfileModal(profile),
               },
               {
-<<<<<<< HEAD
                 label: 'Unmatch',
                 onClick: () => handleRemoveMatch(profile),
                 variant: 'outlined',
                 color: 'secondary',
-=======
+              },
+              {
                 label: 'View Availability', // New button for viewing time preferences
                 onClick: () => handleOpenAvailabilityModal(profile.uid), // We'll define this function below
->>>>>>> bea9a87 (testing view time availability)
               },
             ];
             return <StudentCard key={index} studentUserProfile={profile} actions={actions} />;
