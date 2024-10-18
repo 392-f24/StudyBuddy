@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getMatchedUserUids } from '@firestore/matches';
 import { fetchUserProfile } from '@firestore/userProfile';
 
-export default function useUserProfile(user) {
+export default function useUserProfile(user, getMatchData = false) {
   const [userProfile, setUserProfile] = useState(null);
   const [requestedUsers, setRequestedUsers] = useState(new Set());
   const [matchedUserUids, setMatchedUserUids] = useState(new Set());
@@ -19,10 +19,17 @@ export default function useUserProfile(user) {
           if (profile) {
             setUserProfile(profile);
 
+            // If getMatchData is false, skip fetching match data
+            if (!getMatchData) {
+              setLoading(false);
+              return;
+            }
+
             if (profile.major === '' || profile.year === '') {
               setLoading(false);
               return;
             }
+
             setRequestedUsers(new Set(profile.outgoingMatches.map((match) => match.requestedUser)));
 
             const matchedUids = await getMatchedUserUids(user.uid);
@@ -43,7 +50,7 @@ export default function useUserProfile(user) {
       setUserProfile(null);
       setLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.uid, getMatchData]);
 
   return { userProfile, requestedUsers, setRequestedUsers, matchedUserUids, loading };
 }
