@@ -1,6 +1,6 @@
 // User profile operations (get, update, check)
 import { db } from '@utils/firebaseConfig';
-import { doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
 // Unified function to fetch and listen to user profile changes by UID
 // (supports both regular and transaction-based fetches)
@@ -81,16 +81,3 @@ export const updateUserProfile = async (uid, updates) => {
 //   email: "newemail@example.com",
 //   major: "Computer Science"
 // });
-
-// Function to save/update time preferences in Firebase
-export const saveTimePreferences = async (uid, selectedTimes) => {
-  try {
-    const userDocRef = doc(db, 'users', uid);
-    await updateDoc(userDocRef, {
-      timePreferences: selectedTimes, // Update timePreferences field
-    });
-    console.warn('Time preferences updated successfully.');
-  } catch (error) {
-    console.error('Error updating time preferences:', error);
-  }
-};
