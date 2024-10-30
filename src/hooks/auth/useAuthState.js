@@ -18,5 +18,6 @@ export const useAuthState = () => {
     return () => unsubscribe(); // cleanup on unmount
   }, []);
 
+  console.log(user);
   return [user, error];
 };
