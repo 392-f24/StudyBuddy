@@ -1,0 +1,31 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - test/elara
+
+concurrency:
+  group: test-run-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: 📂 Install Packages
+        run: npm ci --force
+
+      - name: 🧪 Run Tests with Vitest
+        run: npx vitest run
