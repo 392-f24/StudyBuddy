@@ -61,6 +61,7 @@ export default function Header({ onFilterToggle, isFilterOpen, showFilter }) {
             fontWeight: '600',
             fontSize: '1.4rem',
           }}
+          data-cy="title"
         >
           StudyBuddy
         </Typography>
