@@ -1,5 +1,9 @@
-describe('template spec', () => {
-  it('passes', () => {
-    cy.visit('https://example.cypress.io')
-  })
-})
+/* globals cy */
+
+describe('Test App', () => {
+
+  it('launches', () => {
+    cy.visit('/');
+  });
+
+});
