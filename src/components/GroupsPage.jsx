@@ -21,6 +21,9 @@ function GroupsPage() {
   const [matchProfiles, setMatchProfiles] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null); // State for selected user profile
   const [openProfileModal, setOpenProfileModal] = useState(false); // State for modal visibility
+  const [openAvailabilityModal, setOpenAvailabilityModal] = useState(false); // Modal visibility state
+  const [selectedTimePreferences, setSelectedTimePreferences] = useState([]); // State to store time preferences
+
 
   // Combined useEffect for fetching incoming, outgoing, and current matches
   useEffect(() => {
@@ -115,6 +118,22 @@ function GroupsPage() {
     setOpenProfileModal(false);
   };
 
+  const handleOpenAvailabilityModal = async (userId) => {
+    try {
+      const { profile } = await fetchUserProfile(userId); // Fetch user profile for the matched user
+      const fetchedTimes = profile?.timePreferences || []; // Extract time preferences
+      setSelectedTimePreferences(fetchedTimes); // Set the fetched time preferences in state
+      setOpenAvailabilityModal(true); // Open the modal
+    } catch (err) {
+      console.error('Failed to load time preferences', err);
+    }
+  };
+
+  const handleCloseAvailabilityModal = () => {
+    setOpenAvailabilityModal(false); // Close the modal
+  };
+
+
   if (loading) {
     return <Typography variant="h6">Loading...</Typography>;
   }
@@ -150,6 +169,10 @@ function GroupsPage() {
                 onClick: () => handleRemoveMatch(profile),
                 variant: 'outlined',
                 color: 'secondary',
+              },
+              {
+                label: 'View Availability', // New button for viewing time preferences
+                onClick: () => handleOpenAvailabilityModal(profile.uid), // We'll define this function below
               },
             ];
             return <StudentCard key={index} studentUserProfile={profile} actions={actions} />;
@@ -195,7 +218,7 @@ function GroupsPage() {
                 label: 'Requested',
                 variant: 'outlined',
                 color: 'default',
-                onClick: () => {}, // No functionality
+                onClick: () => { }, // No functionality
               },
             ];
             return <StudentCard key={index} studentUserProfile={profile} actions={actions} />;
@@ -213,6 +236,29 @@ function GroupsPage() {
         open={openProfileModal}
         onClose={handleCloseProfileModal}
       />
+      <Modal
+        open={openAvailabilityModal}
+        onClose={handleCloseAvailabilityModal}
+        aria-labelledby="time-preferences-modal"
+        aria-describedby="time-preferences-description"
+      >
+        <Box sx={{ ...modalStyle }}>
+          <Typography id="time-preferences-modal" variant="h6" component="h2">
+            Time Preferences
+          </Typography>
+          {selectedTimePreferences.length > 0 ? (
+            <ul>
+              {selectedTimePreferences.map((time, index) => (
+                <li key={index}>{time}</li>
+              ))}
+            </ul>
+          ) : (
+            <Typography>No time preferences available.</Typography>
+          )}
+          <Button onClick={handleCloseAvailabilityModal}>Close</Button>
+        </Box>
+      </Modal>
+
     </Box>
   );
 }
